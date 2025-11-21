@@ -44,7 +44,7 @@ const config = {
   // LLM Configuration
   llm: {
     provider: process.env.LLM_PROVIDER || 'openai',
-    model: process.env.LLM_MODEL || 'gpt-4-turbo-preview',
+    model: process.env.LLM_MODEL || 'gemini-2.0-flash',
   },
 
   // Embedding Configuration

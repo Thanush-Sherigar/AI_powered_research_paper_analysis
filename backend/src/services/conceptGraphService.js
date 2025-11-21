@@ -1,4 +1,5 @@
 import { getLLMClient } from './llmService.js';
+import { truncateToTokenLimit } from '../utils/chunking.js';
 import prompts from '../prompts/index.js';
 import logger from '../utils/logger.js';
 
@@ -17,7 +18,9 @@ export const extractConceptGraph = async (paper) => {
         logger.info(`Extracting concept graph for paper: ${paper.title}`);
 
         const llm = getLLMClient();
-        const prompt = prompts.extractConcepts(paper.cleanText);
+        // Truncate to ~12000 tokens for graph extraction
+        const limitedText = truncateToTokenLimit(paper.cleanText, 12000);
+        const prompt = prompts.extractConcepts(limitedText);
 
         const graph = await llm.generateJSON(prompt, {
             temperature: 0.5,

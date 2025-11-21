@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { paperAPI, analysisAPI } from '../services/api';
 import { ArrowLeft, FileText, Users, Calendar } from 'lucide-react';
+import ConceptGraph from '../components/ConceptGraph';
+import QABot from '../components/QABot';
+import NotesPanel from '../components/NotesPanel';
 
 export default function PaperDetail() {
     const { id } = useParams();
@@ -247,21 +250,15 @@ export default function PaperDetail() {
                 )}
 
                 {activeTab === 'graph' && (
-                    <div className="text-center py-12 text-gray-400">
-                        Concept Graph visualization will appear here
-                    </div>
+                    <ConceptGraph paperId={id} />
                 )}
 
                 {activeTab === 'notes' && (
-                    <div className="text-center py-12 text-gray-400">
-                        Notes interface - Add manual or AI-generated notes
-                    </div>
+                    <NotesPanel paperId={id} />
                 )}
 
                 {activeTab === 'ask' && (
-                    <div className="text-center py-12 text-gray-400">
-                        Ask questions about this paper using AI
-                    </div>
+                    <QABot paperId={id} projectId={paper?.projectId} />
                 )}
             </div>
         </div>

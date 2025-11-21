@@ -105,7 +105,7 @@ class OpenAILLMClient extends LLMClient {
  * Gemini LLM Client implementation
  */
 class GeminiLLMClient extends LLMClient {
-    constructor(apiKey, model = 'gemini-2.5-flash') {
+    constructor(apiKey, model = 'gemini-2.0-flash') {
         super();
         this.genAI = new GoogleGenerativeAI(apiKey);
         this.model = this.genAI.getGenerativeModel({ model });
@@ -230,7 +230,7 @@ export const getLLMClient = () => {
             if (!config.gemini.apiKey) {
                 throw new Error('Gemini API key not configured');
             }
-            return new GeminiLLMClient(config.gemini.apiKey, config.llm.model || 'gemini-2.5-flash');
+            return new GeminiLLMClient(config.gemini.apiKey, config.llm.model || 'gemini-2.0-flash');
 
         case 'local':
             return new LocalLLMClient();

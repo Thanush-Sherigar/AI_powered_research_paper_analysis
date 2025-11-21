@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectAPI, paperAPI } from '../services/api';
-import { Upload, Plus, FileText, ArrowLeft, Radar, BookMarked } from 'lucide-react';
+import { Upload, FileText, ArrowLeft, Radar, BookMarked, Sparkles } from 'lucide-react';
 
 export default function ProjectView() {
     const { id } = useParams();
@@ -59,74 +59,102 @@ export default function ProjectView() {
                 Back to Projects
             </Link>
 
-            <div className="flex justify-between items-start mb-8">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
                 <div>
                     <h1 className="text-4xl font-bold text-gradient mb-2">
                         {project?.name}
                     </h1>
                     <p className="text-gray-400">{project?.description}</p>
                 </div>
-                <div className="flex space-x-3">
+                <div className="flex flex-wrap gap-3">
                     <Link
                         to={`/projects/${id}/novelty`}
-                        className="btn-gradient flex items-center space-x-2"
+                        className="btn-insights flex items-center space-x-2"
                     >
                         <Radar className="w-5 h-5" />
                         <span>Novelty Radar</span>
                     </Link>
                     <Link
                         to={`/projects/${id}/reading-path`}
-                        className="btn-gradient flex items-center space-x-2"
+                        className="btn-comparison flex items-center space-x-2"
                     >
                         <BookMarked className="w-5 h-5" />
                         <span>Reading Path</span>
+                    </Link>
+                    <Link
+                        to={`/projects/${id}/citation-checker`}
+                        className="btn-quality flex items-center space-x-2"
+                    >
+                        <Sparkles className="w-5 h-5" />
+                        <span>Citation Checker</span>
                     </Link>
                 </div>
             </div>
 
             <div className="glass-card p-6 mb-6">
-                <label className="btn-gradient cursor-pointer inline-flex items-center space-x-2">
-                    <Upload className="w-5 h-5" />
-                    <span>{uploading ? 'Uploading...' : 'Upload PDF'}</span>
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                        disabled={uploading}
-                    />
-                </label>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-1">Add Papers</h3>
+                        <p className="text-sm text-gray-400">Upload PDF files to analyze</p>
+                    </div>
+                    <label className="btn-generation cursor-pointer inline-flex items-center space-x-2">
+                        <Upload className="w-5 h-5" />
+                        <span>{uploading ? 'Uploading...' : 'Upload PDF'}</span>
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            disabled={uploading}
+                        />
+                    </label>
+                </div>
             </div>
 
             {project?.papers?.length === 0 ? (
                 <div className="glass-card p-12 text-center">
-                    <FileText className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 mb-4">
+                        <FileText className="w-10 h-10 text-purple-400" />
+                    </div>
                     <h3 className="text-xl font-semibold mb-2">No papers yet</h3>
-                    <p className="text-gray-400">Upload your first PDF to get started</p>
+                    <p className="text-gray-400">Upload your first PDF to get started with AI-powered analysis</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {project?.papers?.map((paper) => (
-                        <Link
-                            key={paper._id}
-                            to={`/papers/${paper._id}`}
-                            className="glass-card p-6 card-hover"
-                        >
-                            <FileText className="w-8 h-8 text-primary-400 mb-4" />
-                            <h3 className="text-lg font-semibold mb-2 line-clamp-2">
-                                {paper.title}
-                            </h3>
-                            {paper.authors && paper.authors.length > 0 && (
-                                <p className="text-sm text-gray-400 mb-2">
-                                    {paper.authors.slice(0, 3).join(', ')}
-                                    {paper.authors.length > 3 && ' et al.'}
-                                </p>
-                            )}
-                            <p className="text-xs text-gray-500">
-                                {new Date(paper.createdAt).toLocaleDateString()}
-                            </p>
-                        </Link>
-                    ))}
+                <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-2xl font-bold text-gradient-purple">Papers ({project.papers.length})</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {project?.papers?.map((paper, index) => (
+                            <Link
+                                key={paper._id}
+                                to={`/papers/${paper._id}`}
+                                className="glass-card p-6 card-hover group"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 group-hover:from-blue-500/30 group-hover:to-cyan-500/30 transition-all">
+                                        <FileText className="w-6 h-6 text-blue-400" />
+                                    </div>
+                                    <span className="badge-info">#{index + 1}</span>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-3 line-clamp-2 group-hover:text-primary-300 transition-colors">
+                                    {paper.title}
+                                </h3>
+                                {paper.authors && paper.authors.length > 0 && (
+                                    <p className="text-sm text-gray-400 mb-2 line-clamp-1">
+                                        {paper.authors.slice(0, 3).join(', ')}
+                                        {paper.authors.length > 3 && ' et al.'}
+                                    </p>
+                                )}
+                                <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+                                    <p className="text-xs text-gray-500">
+                                        {new Date(paper.createdAt).toLocaleDateString()}
+                                    </p>
+                                    <span className="badge-success">Processed</span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

@@ -57,6 +57,7 @@ export const getSummaries = async (req, res, next) => {
             paper.cachedAnalyses = {};
         }
         paper.cachedAnalyses[cacheKey] = summary;
+        paper.markModified('cachedAnalyses');
         await paper.save();
 
         res.json({
@@ -104,7 +105,9 @@ export const getReview = async (req, res, next) => {
             paper.cachedAnalyses = {};
         }
         paper.cachedAnalyses.review = review;
+        paper.markModified('cachedAnalyses');
         await paper.save();
+        logger.info('Review saved to cache');
 
         res.json({
             review,

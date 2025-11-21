@@ -93,7 +93,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/citation-checker"
+                    path="/projects/:id/citation-checker"
                     element={
                         <ProtectedRoute>
                             <CitationChecker />
