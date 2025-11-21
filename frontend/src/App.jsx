@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -35,75 +36,79 @@ function App() {
     const { isAuthenticated } = useAuth();
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
             {isAuthenticated && <Navbar />}
 
-            <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+            <main className="flex-1">
+                <Routes>
+                    {/* Public routes */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
 
-                {/* Protected routes */}
-                <Route
-                    path="/"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/projects/:id"
-                    element={
-                        <ProtectedRoute>
-                            <ProjectView />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/papers/:id"
-                    element={
-                        <ProtectedRoute>
-                            <PaperDetail />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/compare"
-                    element={
-                        <ProtectedRoute>
-                            <ComparisonView />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/projects/:id/novelty"
-                    element={
-                        <ProtectedRoute>
-                            <NoveltyRadar />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/projects/:id/reading-path"
-                    element={
-                        <ProtectedRoute>
-                            <ReadingPath />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/projects/:id/citation-checker"
-                    element={
-                        <ProtectedRoute>
-                            <CitationChecker />
-                        </ProtectedRoute>
-                    }
-                />
+                    {/* Protected routes */}
+                    <Route
+                        path="/"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects/:id"
+                        element={
+                            <ProtectedRoute>
+                                <ProjectView />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/papers/:id"
+                        element={
+                            <ProtectedRoute>
+                                <PaperDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/compare"
+                        element={
+                            <ProtectedRoute>
+                                <ComparisonView />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects/:id/novelty"
+                        element={
+                            <ProtectedRoute>
+                                <NoveltyRadar />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects/:id/reading-path"
+                        element={
+                            <ProtectedRoute>
+                                <ReadingPath />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects/:id/citation-checker"
+                        element={
+                            <ProtectedRoute>
+                                <CitationChecker />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+            </main>
+
+            {isAuthenticated && <Footer />}
         </div>
     );
 }
