@@ -133,3 +133,44 @@ export const refresh = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * GitHub Callback
+ * GET /api/auth/github/callback
+ */
+export const githubCallback = async (req, res, next) => {
+    try {
+        // User is already authenticated by Passport
+        const user = req.user;
+
+        // Generate tokens
+        const tokens = generateTokenPair(user);
+
+        logger.info(`User logged in via GitHub: ${user.email}`);
+
+        // Redirect to frontend with tokens in query params
+        // In a production app, you might want to use cookies or a temporary code exchange
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/login?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get current user
+ * GET /api/auth/me
+ */
+export const getMe = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        res.json({
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

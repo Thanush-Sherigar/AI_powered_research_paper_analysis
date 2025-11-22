@@ -34,3 +34,10 @@ yarn-error.log*
 
 # Local artifacts
 artifacts/
+
+# Docker
+docker-compose.override.yml
+
+# Uploads
+uploads/
+backend/uploads/

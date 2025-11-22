@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import app from './app.js';
 import connectDB from './db/connection.js';
 import config from './config/index.js';

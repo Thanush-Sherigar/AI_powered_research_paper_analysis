@@ -87,7 +87,7 @@ export default function PaperDetail() {
         <div className="container mx-auto p-6">
             <Link
                 to={`/projects/${paper?.projectId}`}
-                className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors"
+                className="flex items-center text-gray-500 hover:text-gray-900 mb-6 transition-colors"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Project
@@ -114,9 +114,9 @@ export default function PaperDetail() {
                 </div>
 
                 {paper?.abstract && (
-                    <div className="bg-white/5 rounded-lg p-4">
-                        <h3 className="font-semibold mb-2">Abstract</h3>
-                        <p className="text-gray-300 text-sm leading-relaxed">
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                        <h3 className="font-semibold mb-2 text-gray-900">Abstract</h3>
+                        <p className="text-gray-700 text-sm leading-relaxed">
                             {paper.abstract}
                         </p>
                     </div>
@@ -130,8 +130,8 @@ export default function PaperDetail() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 font-medium transition-colors ${activeTab === tab.id
-                                ? 'text-primary-400 border-b-2 border-primary-400'
-                                : 'text-gray-400 hover:text-white'
+                                ? 'text-primary-600 border-b-2 border-primary-600'
+                                : 'text-gray-500 hover:text-gray-900'
                                 }`}
                         >
                             {tab.label}
@@ -147,8 +147,8 @@ export default function PaperDetail() {
                                     key={mode}
                                     onClick={() => setSummaryMode(mode)}
                                     className={`px-4 py-2 rounded-lg transition-colors ${summaryMode === mode
-                                        ? 'bg-primary-500 text-white'
-                                        : 'bg-white/5 hover:bg-white/10'
+                                        ? 'bg-primary-600 text-white'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                                         }`}
                                 >
                                     {mode.toUpperCase()}
@@ -161,8 +161,8 @@ export default function PaperDetail() {
                                 <div className="spinner"></div>
                             </div>
                         ) : summary ? (
-                            <div className="bg-white/5 rounded-lg p-6">
-                                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                            <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                                     {summary}
                                 </p>
                             </div>
@@ -174,7 +174,7 @@ export default function PaperDetail() {
                     <div>
                         {!review ? (
                             <div className="text-center py-12">
-                                <p className="text-gray-400 mb-6">
+                                <p className="text-gray-500 mb-6">
                                     Generate a comprehensive conference-style peer review for this paper.
                                 </p>
                                 <button
@@ -194,30 +194,30 @@ export default function PaperDetail() {
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="glass-card p-6 border-l-4 border-primary-500">
-                                    <h3 className="text-xl font-bold mb-4">Overall Score: {review.score}/10</h3>
-                                    <p className="text-gray-300">{review.justification}</p>
+                                <div className="glass-card p-6 border-l-4 border-primary-600">
+                                    <h3 className="text-xl font-bold mb-4 text-gray-900">Overall Score: {review.score}/10</h3>
+                                    <p className="text-gray-700">{review.justification}</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6">
-                                        <h3 className="font-bold text-green-400 mb-4">Strengths</h3>
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                                        <h3 className="font-bold text-green-700 mb-4">Strengths</h3>
                                         <ul className="space-y-2">
                                             {review.strengths.map((item, i) => (
-                                                <li key={i} className="flex items-start text-gray-300">
-                                                    <span className="mr-2 text-green-400">•</span>
+                                                <li key={i} className="flex items-start text-gray-700">
+                                                    <span className="mr-2 text-green-600">•</span>
                                                     {item}
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
 
-                                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
-                                        <h3 className="font-bold text-red-400 mb-4">Weaknesses</h3>
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                                        <h3 className="font-bold text-red-700 mb-4">Weaknesses</h3>
                                         <ul className="space-y-2">
                                             {review.weaknesses.map((item, i) => (
-                                                <li key={i} className="flex items-start text-gray-300">
-                                                    <span className="mr-2 text-red-400">•</span>
+                                                <li key={i} className="flex items-start text-gray-700">
+                                                    <span className="mr-2 text-red-600">•</span>
                                                     {item}
                                                 </li>
                                             ))}
@@ -225,24 +225,24 @@ export default function PaperDetail() {
                                     </div>
                                 </div>
 
-                                <div className="bg-white/5 rounded-lg p-6">
-                                    <h3 className="font-bold mb-3 text-primary-300">Summary</h3>
-                                    <p className="text-gray-300 leading-relaxed">{review.summary}</p>
+                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <h3 className="font-bold mb-3 text-primary-700">Summary</h3>
+                                    <p className="text-gray-700 leading-relaxed">{review.summary}</p>
                                 </div>
 
-                                <div className="bg-white/5 rounded-lg p-6">
-                                    <h3 className="font-bold mb-3 text-primary-300">Novelty & Significance</h3>
-                                    <p className="text-gray-300 leading-relaxed">{review.novelty}</p>
+                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <h3 className="font-bold mb-3 text-primary-700">Novelty & Significance</h3>
+                                    <p className="text-gray-700 leading-relaxed">{review.novelty}</p>
                                 </div>
 
-                                <div className="bg-white/5 rounded-lg p-6">
-                                    <h3 className="font-bold mb-3 text-primary-300">Soundness</h3>
-                                    <p className="text-gray-300 leading-relaxed">{review.soundness}</p>
+                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <h3 className="font-bold mb-3 text-primary-700">Soundness</h3>
+                                    <p className="text-gray-700 leading-relaxed">{review.soundness}</p>
                                 </div>
 
-                                <div className="bg-white/5 rounded-lg p-6">
-                                    <h3 className="font-bold mb-3 text-primary-300">Clarity</h3>
-                                    <p className="text-gray-300 leading-relaxed">{review.clarity}</p>
+                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <h3 className="font-bold mb-3 text-primary-700">Clarity</h3>
+                                    <p className="text-gray-700 leading-relaxed">{review.clarity}</p>
                                 </div>
                             </div>
                         )}

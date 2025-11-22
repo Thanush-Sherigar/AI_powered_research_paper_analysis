@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectAPI, paperAPI } from '../services/api';
 import { Upload, FileText, ArrowLeft, Radar, BookMarked, Sparkles } from 'lucide-react';
+import FileUpload from '../components/ui/FileUpload';
 
 export default function ProjectView() {
     const { id } = useParams();
@@ -24,8 +25,7 @@ export default function ProjectView() {
         }
     };
 
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
+    const handleFileUpload = async (file) => {
         if (!file) return;
 
         setUploading(true);
@@ -92,23 +92,12 @@ export default function ProjectView() {
             </div>
 
             <div className="glass-card p-6 mb-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg font-semibold mb-1">Add Papers</h3>
-                        <p className="text-sm text-gray-400">Upload PDF files to analyze</p>
-                    </div>
-                    <label className="btn-generation cursor-pointer inline-flex items-center space-x-2">
-                        <Upload className="w-5 h-5" />
-                        <span>{uploading ? 'Uploading...' : 'Upload PDF'}</span>
-                        <input
-                            type="file"
-                            accept=".pdf"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            disabled={uploading}
-                        />
-                    </label>
-                </div>
+                <h3 className="text-lg font-semibold mb-4">Add Papers</h3>
+                <FileUpload
+                    onFileSelect={handleFileUpload}
+                    isUploading={uploading}
+                    accept=".pdf"
+                />
             </div>
 
             {project?.papers?.length === 0 ? (

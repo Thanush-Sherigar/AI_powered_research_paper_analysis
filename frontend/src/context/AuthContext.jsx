@@ -77,12 +77,20 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const setAuthData = (user, accessToken, refreshToken) => {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+    };
+
     const value = {
         user,
         loading,
         login,
         register,
         logout,
+        setAuthData,
         isAuthenticated: !!user,
     };
 

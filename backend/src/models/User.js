@@ -13,13 +13,23 @@ const userSchema = new mongoose.Schema(
         },
         passwordHash: {
             type: String,
-            required: [true, 'Password is required'],
+            required: function () { return this.authProvider === 'local'; },
             minlength: [6, 'Password must be at least 6 characters'],
         },
         name: {
             type: String,
             required: [true, 'Name is required'],
             trim: true,
+        },
+        githubId: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
+        authProvider: {
+            type: String,
+            enum: ['local', 'github'],
+            default: 'local',
         },
         role: {
             type: String,

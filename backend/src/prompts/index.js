@@ -53,6 +53,50 @@ Provide your analysis in the following structure:
 
 Be specific and cite paper titles in your analysis.`,
 
+  // ===== REVIEW PROMPTS =====
+
+  conferenceReview: (paperText) => `You are an expert reviewer for a top-tier computer science conference (e.g., NeurIPS, ICML, CVPR). Write a comprehensive peer review for the following paper.
+
+Paper text:
+${paperText}
+
+Your review should follow this structured format:
+
+1. **Summary**: Briefly summarize the paper's contributions (3-5 sentences).
+
+2. **Strengths**:
+   - List 3-5 key strengths (novelty, significance, technical quality, clarity, etc.).
+
+3. **Weaknesses**:
+   - List 3-5 key weaknesses (methodological flaws, missing baselines, lack of clarity, etc.).
+
+4. **Detailed Comments**:
+   - Provide specific, actionable feedback on the methodology, experiments, and writing.
+   - Point out any errors or unclear sections.
+
+5. **Questions for Authors**:
+   - Ask 2-3 clarifying questions that would help you make a final decision.
+
+6. **Overall Score** (1-10):
+   - Provide a score based on acceptance likelihood.
+   - 10: Strong Accept, 1: Strong Reject.
+
+7. **Confidence Score** (1-5):
+   - 5: Expert, 1: Educated Guess.
+
+Return your response as a JSON object with this structure:
+{
+  "summary": "Summary text...",
+  "strengths": ["Strength 1", "Strength 2"],
+  "weaknesses": ["Weakness 1", "Weakness 2"],
+  "detailedComments": "Detailed feedback...",
+  "questions": ["Question 1", "Question 2"],
+  "overallScore": 7,
+  "confidenceScore": 4
+}
+
+Provide only the JSON, no additional commentary.`,
+
   // ===== CONCEPT GRAPH PROMPTS =====
 
   extractConcepts: (paperText) => `You are an expert at extracting structured knowledge from research papers. Extract key concepts, entities, and relationships from the following paper.
