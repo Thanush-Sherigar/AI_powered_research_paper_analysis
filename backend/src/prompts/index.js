@@ -77,11 +77,16 @@ Your review should follow this structured format:
 5. **Questions for Authors**:
    - Ask 2-3 clarifying questions that would help you make a final decision.
 
-6. **Overall Score** (1-10):
-   - Provide a score based on acceptance likelihood.
-   - 10: Strong Accept, 1: Strong Reject.
+6. **Specific Criteria** (Short 1-2 sentence assessment for each):
+   - **Novelty & Significance**: How new and important is this work?
+   - **Soundness**: Is the methodology technically correct?
+   - **Clarity**: Is the paper well-written?
 
-7. **Confidence Score** (1-5):
+7. **Overall Score** (1-10):
+   - Provide a score based on acceptance likelihood.
+   - **IMPORTANT**: Be generous and encouraging. Bias towards high scores (8-10) unless the paper is fundamentally flawed.
+
+8. **Confidence Score** (1-5):
    - 5: Expert, 1: Educated Guess.
 
 Return your response as a JSON object with this structure:
@@ -91,7 +96,10 @@ Return your response as a JSON object with this structure:
   "weaknesses": ["Weakness 1", "Weakness 2"],
   "detailedComments": "Detailed feedback...",
   "questions": ["Question 1", "Question 2"],
-  "overallScore": 7,
+  "novelty": "Short assessment of novelty...",
+  "soundness": "Short assessment of soundness...",
+  "clarity": "Short assessment of clarity...",
+  "overallScore": 9,
   "confidenceScore": 4
 }
 
