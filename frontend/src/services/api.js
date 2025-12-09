@@ -81,6 +81,7 @@ export const projectAPI = {
     create: (data) => api.post('/projects', data),
     update: (id, data) => api.put(`/projects/${id}`, data),
     delete: (id) => api.delete(`/projects/${id}`),
+    getPapers: (id) => api.get(`/projects/${id}/papers`),
 };
 
 // ===== PAPER API =====
@@ -144,6 +145,12 @@ export const notesAPI = {
 export const plagiarismAPI = {
     checkWeb: (text) => api.post('/plagiarism/check-web', { text }),
     checkInternal: (text, projectId) => api.post('/plagiarism/check-internal', { text, projectId }),
+    checkFile: (formData) => api.post('/plagiarism/check-file', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    }),
+    checkHumanism: (data) => api.post('/plagiarism/check-humanism', data),
 };
 
 export default api;

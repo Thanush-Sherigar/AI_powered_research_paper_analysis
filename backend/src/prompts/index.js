@@ -31,27 +31,20 @@ ${paperText}
 
 Provide only the executive summary paragraph, no additional commentary.`,
 
-  detailedSummary: (paperText, sections) => `You are an expert research paper summarizer. Create a detailed section-wise summary of the following research paper.
+  detailedSummary: (paperText) => `You are an expert research paper summarizer. Create a detailed section-wise summary of the following research paper.
 
-For each major section, provide a comprehensive summary that captures the key points, methods, results, and insights.
+The summary should cover the following key aspects in depth:
 
-Paper sections:
-Papers to compare:
-${papers.map((p, i) => `\n### Paper ${i + 1}: ${p.title}\n${p.abstract || p.cleanText.substring(0, 1000)}`).join('\n\n')}
+1. **Problem & Motivation**: What specific problem is the paper addressing? Why is it important?
+2. **Methodology**: Detailed explanation of the proposed approach, architecture, or algorithms.
+3. **Experiments & Results**: What datasets were used? What were the key quantitative results?
+4. **Contributions**: What are the specific novel contributions of this work?
+5. **Limitations & Future Work**: What limitations did the authors acknowledge?
 
-Provide your analysis in the following structure:
+Paper text:
+${paperText}
 
-1. **Common Themes**: What research questions, domains, or approaches do these papers share?
-
-2. **Key Differences**: How do they differ in methodology, scope, or focus?
-
-3. **Methods & Metrics**: Compare the techniques and evaluation metrics used
-
-4. **Rigor & Reproducibility**: Which paper(s) provide the most rigorous methodology and reproducibility?
-
-5. **Recommendation**: If someone can only read one paper, which should it be and why?
-
-Be specific and cite paper titles in your analysis.`,
+Provide your response in Markdown format with clear headings.`,
 
   // ===== REVIEW PROMPTS =====
 

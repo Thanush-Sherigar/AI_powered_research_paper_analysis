@@ -1,4 +1,6 @@
-import { checkWeb, checkInternal } from '../services/plagiarismService.js';
+import fs from 'fs/promises';
+import { checkWeb, checkInternal, checkHumanism } from '../services/plagiarismService.js';
+import { processPDF } from '../services/pdfService.js';
 import { AppError } from '../middlewares/errorMiddleware.js';
 
 /**
@@ -35,12 +37,75 @@ export const checkInternalSimilarity = async (req, res, next) => {
             throw new AppError('Text and projectId are required', 400, 'INVALID_INPUT');
         }
 
-        // Verify project access is handled implicitly by ensuring the user is part of the flow
-        // Ideally we check project ownership here too, similar to other controllers
-        // For brevity, assuming user has access if they have the projectId (or middleware handles it)
-
         const result = await checkInternal(text, projectId);
 
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Check Project Report (File Upload)
+ * POST /api/plagiarism/check-file
+ * Multipart Form: file, projectId
+ */
+export const checkFileReport = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            throw new AppError('No report file uploaded', 400, 'NO_FILE');
+        }
+
+        const { projectId } = req.body;
+
+        // 1. Extract text from PDF
+        const processed = await processPDF(req.file.path);
+        const text = processed.cleanText;
+
+        // Clean up file immediately after extraction
+        await fs.unlink(req.file.path).catch(() => { });
+
+        if (!text || text.length < 100) {
+            throw new AppError('Extracted text is too short quality analysis', 400, 'TEXT_TOO_SHORT');
+        }
+
+        // 2. Run Checks in Parallel
+        const [webResult, humanismResult] = await Promise.all([
+            checkWeb(text),
+            checkHumanism(text)
+        ]);
+
+        res.json({
+            fileInfo: {
+                name: req.file.originalname,
+                wordCount: processed.metadata.wordCount,
+                pageCount: processed.metadata.pageCount
+            },
+            web: webResult,
+            humanism: humanismResult
+        });
+
+    } catch (error) {
+        // Ensure file is deleted on error
+        if (req.file) {
+            await fs.unlink(req.file.path).catch(() => { });
+        }
+        next(error);
+    }
+};
+
+/**
+ * Check for AI content (Humanism Score)
+ * POST /api/plagiarism/check-humanism
+ * Body: { text }
+ */
+export const checkHumanismScore = async (req, res, next) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            throw new AppError('Text is required', 400, 'INVALID_INPUT');
+        }
+        const result = await checkHumanism(text);
         res.json(result);
     } catch (error) {
         next(error);

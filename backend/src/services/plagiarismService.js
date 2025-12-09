@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getEmbeddingClient } from './embeddingService.js';
+import { getLLMClient } from './llmService.js';
 import EmbeddingChunk from '../models/EmbeddingChunk.js';
 import Paper from '../models/Paper.js';
 import logger from '../utils/logger.js';
@@ -145,6 +146,72 @@ export const checkInternal = async (text, projectId) => {
     } catch (error) {
         logger.error(`Internal similarity check failed: ${error.message}`);
         throw error;
+    }
+};
+
+/**
+ * Check for Humanism (AI Detection)
+ * Uses LLM to analyze text for AI-generated patterns
+ * @param {string} text - Text to check
+ * @returns {Promise<Object>} Humanism check results
+ */
+export const checkHumanism = async (text) => {
+    try {
+        if (!text || text.length < 100) {
+            throw new Error('Text too short for humanism check (min 100 chars)');
+        }
+
+        const llm = getLLMClient();
+
+        // We take a sample of the text if it's too long to save tokens/time
+        // Taking middle-ish chunk usually works well, or just the first few paragraphs
+        const sampleText = text.length > 4000 ? text.substring(0, 4000) : text;
+
+        const prompt = `
+        Analyze the following text for signs of being AI-generated versus human-written. 
+        Focus on:
+        1. Perplexity/Burstiness (sentence structure variety)
+        2. Repetitiveness (phrases, transition words)
+        3. Depth of nuance and personal voice
+        4. "Hallucination" style confident but vague assertions
+
+        Text Sample:
+        """
+        ${sampleText}
+        """
+
+        Provide a "Humanism Score" from 0 to 100, where:
+        - 0-20% = Highly likely AI-generated
+        - 21-50% = Likely AI-assisted or mixed
+        - 51-80% = Likely Human-written with some formal structure
+        - 81-100% = Highly likely Human-written (nuanced, varied, imperfect)
+
+        Return valid JSON in this format:
+        {
+            "humanismScore": number, // 0-100
+            "assessment": "AI-generated" | "Mixed" | "Human-written",
+            "confidence": number, // 0-100 indicating how sure you are
+            "reasoning": "Brief explanation of why"
+        }
+        `;
+
+        const result = await llm.generateJSON(prompt, { temperature: 0.1 });
+
+        return {
+            source: 'humanism',
+            ...result
+        };
+
+    } catch (error) {
+        logger.error(`Humanism check failed: ${error.message}`);
+        // Fallback for demo purposes if LLM fails
+        return {
+            source: 'humanism',
+            humanismScore: 50,
+            assessment: 'Unknown',
+            confidence: 0,
+            reasoning: 'Analysis failed due to service error.'
+        };
     }
 };
 

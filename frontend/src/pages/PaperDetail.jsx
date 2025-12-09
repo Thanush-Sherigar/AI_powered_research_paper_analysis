@@ -195,7 +195,7 @@ export default function PaperDetail() {
                         ) : (
                             <div className="space-y-6">
                                 <div className="glass-card p-6 border-l-4 border-primary-600">
-                                    <h3 className="text-xl font-bold mb-4 text-gray-900">Overall Score: {review.score}/10</h3>
+                                    <h3 className="text-xl font-bold mb-4 text-gray-900">Overall Score: {review.overallScore}/10</h3>
                                     <p className="text-gray-700">{review.justification}</p>
                                 </div>
 
