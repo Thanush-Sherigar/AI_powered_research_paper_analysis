@@ -141,4 +141,9 @@ export const notesAPI = {
     generateAI: (paperId, data) => api.post(`/papers/${paperId}/ai-notes`, data),
 };
 
+export const plagiarismAPI = {
+    checkWeb: (text) => api.post('/plagiarism/check-web', { text }),
+    checkInternal: (text, projectId) => api.post('/plagiarism/check-internal', { text, projectId }),
+};
+
 export default api;

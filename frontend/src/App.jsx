@@ -11,6 +11,7 @@ import ComparisonView from './pages/ComparisonView';
 import NoveltyRadar from './pages/NoveltyRadar';
 import ReadingPath from './pages/ReadingPath';
 import CitationChecker from './pages/CitationChecker';
+import PlagiarismCheck from './pages/PlagiarismCheck';
 
 /**
  * Protected Route Component
@@ -99,6 +100,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <CitationChecker />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/projects/:id/plagiarism"
+                        element={
+                            <ProtectedRoute>
+                                <PlagiarismCheck />
                             </ProtectedRoute>
                         }
                     />

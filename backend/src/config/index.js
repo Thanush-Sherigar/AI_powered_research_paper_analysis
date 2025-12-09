@@ -59,6 +59,12 @@ const config = {
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB
     uploadDir: process.env.UPLOAD_DIR || 'uploads',
   },
+
+  // Google Search (Plagiarism)
+  googleSearch: {
+    apiKey: process.env.GOOGLE_SEARCH_API_KEY || '',
+    searchEngineId: process.env.GOOGLE_SEARCH_ENGINE_ID || '',
+  },
 };
 
 // Validate critical configuration

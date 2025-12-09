@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projectAPI, paperAPI } from '../services/api';
-import { Upload, FileText, ArrowLeft, Radar, BookMarked, Sparkles } from 'lucide-react';
+import { Upload, FileText, ArrowLeft, Radar, BookMarked, Sparkles, ShieldAlert } from 'lucide-react';
 import FileUpload from '../components/ui/FileUpload';
 
 export default function ProjectView() {
@@ -87,6 +87,14 @@ export default function ProjectView() {
                     >
                         <Sparkles className="w-5 h-5" />
                         <span>Citation Checker</span>
+                    </Link>
+                    <Link
+                        to={`/projects/${id}/plagiarism`}
+                        className="btn-danger flex items-center space-x-2"
+                        style={{ background: 'linear-gradient(to right, #ef4444, #f87171)' }}
+                    >
+                        <ShieldAlert className="w-5 h-5" />
+                        <span>Plagiarism Check</span>
                     </Link>
                 </div>
             </div>

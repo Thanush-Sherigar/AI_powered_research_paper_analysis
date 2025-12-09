@@ -5,6 +5,7 @@ import projectRoutes from './routes/projectRoutes.js';
 import paperRoutes from './routes/paperRoutes.js';
 import analysisRoutes from './routes/analysisRoutes.js';
 import notesRoutes from './routes/notesRoutes.js';
+import plagiarismRoutes from './routes/plagiarismRoutes.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorMiddleware.js';
 import logger from './utils/logger.js';
 
@@ -56,6 +57,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/papers', paperRoutes);
 app.use('/api', analysisRoutes);
 app.use('/api', notesRoutes);
+app.use('/api/plagiarism', plagiarismRoutes);
 
 // ===== ERROR HANDLING =====
 
