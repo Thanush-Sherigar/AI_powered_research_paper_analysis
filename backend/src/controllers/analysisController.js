@@ -42,23 +42,29 @@ export const getSummaries = async (req, res, next) => {
         // Check cache first
         const cacheKey = `${mode}Summary`;
         if (paper.cachedAnalyses && paper.cachedAnalyses[cacheKey]) {
-            logger.info(`Returning cached ${mode} summary`);
-            return res.json({
-                summary: paper.cachedAnalyses[cacheKey],
-                cached: true,
-            });
+            const cachedSummary = paper.cachedAnalyses[cacheKey];
+            // Only return cache if it's not an error message
+            if (!cachedSummary.includes('The AI service is currently unavailable')) {
+                logger.info(`Returning cached ${mode} summary`);
+                return res.json({
+                    summary: cachedSummary,
+                    cached: true,
+                });
+            }
         }
 
         // Generate summary
         const summary = await generateSummary(paper, mode);
 
-        // Cache result
-        if (!paper.cachedAnalyses) {
-            paper.cachedAnalyses = {};
+        // Cache result ONLY if it's not an error message
+        if (!summary.includes('The AI service is currently unavailable')) {
+            if (!paper.cachedAnalyses) {
+                paper.cachedAnalyses = {};
+            }
+            paper.cachedAnalyses[cacheKey] = summary;
+            paper.markModified('cachedAnalyses');
+            await paper.save();
         }
-        paper.cachedAnalyses[cacheKey] = summary;
-        paper.markModified('cachedAnalyses');
-        await paper.save();
 
         res.json({
             summary,
@@ -90,24 +96,30 @@ export const getReview = async (req, res, next) => {
 
         // Check cache
         if (paper.cachedAnalyses && paper.cachedAnalyses.review) {
-            logger.info('Returning cached review');
-            return res.json({
-                review: paper.cachedAnalyses.review,
-                cached: true,
-            });
+            const cachedReview = paper.cachedAnalyses.review;
+            // Only return cache if it's not an error message
+            if (!cachedReview.includes('The AI service is currently unavailable')) {
+                logger.info('Returning cached review');
+                return res.json({
+                    review: cachedReview,
+                    cached: true,
+                });
+            }
         }
 
         // Generate review
         const review = await generateReview(paper);
 
-        // Cache result
-        if (!paper.cachedAnalyses) {
-            paper.cachedAnalyses = {};
+        // Cache result ONLY if it's not an error message
+        if (!review.includes('The AI service is currently unavailable')) {
+            if (!paper.cachedAnalyses) {
+                paper.cachedAnalyses = {};
+            }
+            paper.cachedAnalyses.review = review;
+            paper.markModified('cachedAnalyses');
+            await paper.save();
+            logger.info('Review saved to cache');
         }
-        paper.cachedAnalyses.review = review;
-        paper.markModified('cachedAnalyses');
-        await paper.save();
-        logger.info('Review saved to cache');
 
         res.json({
             review,

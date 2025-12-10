@@ -147,3 +147,28 @@ export const deleteProject = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get all papers in a project
+ * GET /api/projects/:id/papers
+ */
+export const getProjectPapers = async (req, res, next) => {
+    try {
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            throw new AppError('Project not found', 404, 'PROJECT_NOT_FOUND');
+        }
+
+        // Check ownership
+        if (project.userId.toString() !== req.user.id) {
+            throw new AppError('Access denied', 403, 'ACCESS_DENIED');
+        }
+
+        const papers = await Paper.find({ projectId: project._id }).sort({ createdAt: -1 });
+
+        res.json(papers);
+    } catch (error) {
+        next(error);
+    }
+};
