@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { paperAPI, analysisAPI } from '../services/api';
-import { ArrowLeft, FileText, Users, Calendar } from 'lucide-react';
+import { ArrowLeft, FileText, Users, Calendar, CheckCircle, XCircle, Award, BookOpen, Zap, Layout, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
 import ConceptGraph from '../components/ConceptGraph';
 import QABot from '../components/QABot';
 import NotesPanel from '../components/NotesPanel';
@@ -86,7 +86,7 @@ export default function PaperDetail() {
     return (
         <div className="container mx-auto p-6">
             <Link
-                to={`/projects/${paper?.projectId}`}
+                to={`/projects/${paper?.projectId?._id || paper?.projectId}`}
                 className="flex items-center text-gray-500 hover:text-gray-900 mb-6 transition-colors"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -193,56 +193,140 @@ export default function PaperDetail() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="space-y-6">
-                                <div className="glass-card p-6 border-l-4 border-primary-600">
-                                    <h3 className="text-xl font-bold mb-4 text-gray-900">Overall Score: {review.overallScore}/10</h3>
-                                    <p className="text-gray-700">{review.justification}</p>
+                            <div className="space-y-8 animate-fadeIn">
+                                {/* Score Section */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                    <div className="bg-slate-900 text-white p-6 flex flex-col md:flex-row items-center gap-8">
+                                        <div className="relative">
+                                            {/* Score Ring SVG */}
+                                            <svg className="w-32 h-32 transform -rotate-90">
+                                                <circle
+                                                    className="text-slate-700"
+                                                    strokeWidth="8"
+                                                    stroke="currentColor"
+                                                    fill="transparent"
+                                                    r="58"
+                                                    cx="64"
+                                                    cy="64"
+                                                />
+                                                <circle
+                                                    className={review.overallScore >= 7 ? "text-green-500" : review.overallScore >= 5 ? "text-yellow-500" : "text-red-500"}
+                                                    strokeWidth="8"
+                                                    strokeDasharray={365}
+                                                    strokeDashoffset={365 - (365 * review.overallScore) / 10}
+                                                    strokeLinecap="round"
+                                                    stroke="currentColor"
+                                                    fill="transparent"
+                                                    r="58"
+                                                    cx="64"
+                                                    cy="64"
+                                                />
+                                            </svg>
+                                            <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                                                <span className="text-4xl font-bold">{review.overallScore}</span>
+                                                <span className="text-xs text-slate-400 uppercase tracking-wider">Score</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 text-center md:text-left">
+                                            <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                                                <Award className="w-5 h-5 text-yellow-500" />
+                                                <h3 className="text-xl font-bold">Reviewer's Assessment</h3>
+                                            </div>
+                                            <p className="text-slate-300 leading-relaxed text-lg">
+                                                "{review.justification}"
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
 
+                                {/* Strengths & Weaknesses Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Strengths */}
+                                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
+                                        <div className="bg-green-50/50 p-4 border-b border-green-100 flex items-center gap-2">
+                                            <div className="p-2 bg-green-100 rounded-lg text-green-600">
+                                                <ThumbsUp className="w-5 h-5" />
+                                            </div>
+                                            <h3 className="font-bold text-gray-800 text-lg">Key Strengths</h3>
+                                        </div>
+                                        <div className="p-6">
+                                            <ul className="space-y-4">
+                                                {review.strengths.map((item, i) => (
+                                                    <li key={i} className="flex gap-4 group/item">
+                                                        <div className="mt-1 flex-shrink-0">
+                                                            <CheckCircle className="w-5 h-5 text-green-500" />
+                                                        </div>
+                                                        <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    {/* Weaknesses */}
+                                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
+                                        <div className="bg-red-50/50 p-4 border-b border-red-100 flex items-center gap-2">
+                                            <div className="p-2 bg-red-100 rounded-lg text-red-600">
+                                                <ThumbsDown className="w-5 h-5" />
+                                            </div>
+                                            <h3 className="font-bold text-gray-800 text-lg">Areas for Improvement</h3>
+                                        </div>
+                                        <div className="p-6">
+                                            <ul className="space-y-4">
+                                                {review.weaknesses.map((item, i) => (
+                                                    <li key={i} className="flex gap-4 group/item">
+                                                        <div className="mt-1 flex-shrink-0">
+                                                            <XCircle className="w-5 h-5 text-red-500" />
+                                                        </div>
+                                                        <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Detailed Analysis Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                                        <h3 className="font-bold text-green-700 mb-4">Strengths</h3>
-                                        <ul className="space-y-2">
-                                            {review.strengths.map((item, i) => (
-                                                <li key={i} className="flex items-start text-gray-700">
-                                                    <span className="mr-2 text-green-600">•</span>
-                                                    {item}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                                        <div className="flex items-center gap-2 mb-4 text-blue-600">
+                                            <BookOpen className="w-5 h-5" />
+                                            <h3 className="font-bold text-gray-900">Summary</h3>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed text-sm">
+                                            {review.summary}
+                                        </p>
                                     </div>
 
-                                    <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                                        <h3 className="font-bold text-red-700 mb-4">Weaknesses</h3>
-                                        <ul className="space-y-2">
-                                            {review.weaknesses.map((item, i) => (
-                                                <li key={i} className="flex items-start text-gray-700">
-                                                    <span className="mr-2 text-red-600">•</span>
-                                                    {item}
-                                                </li>
-                                            ))}
-                                        </ul>
+                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-purple-300 transition-colors">
+                                        <div className="flex items-center gap-2 mb-4 text-purple-600">
+                                            <Zap className="w-5 h-5" />
+                                            <h3 className="font-bold text-gray-900">Novelty & Significance</h3>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed text-sm">
+                                            {review.novelty}
+                                        </p>
                                     </div>
-                                </div>
 
-                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-                                    <h3 className="font-bold mb-3 text-primary-700">Summary</h3>
-                                    <p className="text-gray-700 leading-relaxed">{review.summary}</p>
-                                </div>
+                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                        <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                                            <Layout className="w-5 h-5" />
+                                            <h3 className="font-bold text-gray-900">Soundness & Methodology</h3>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed text-sm">
+                                            {review.soundness}
+                                        </p>
+                                    </div>
 
-                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-                                    <h3 className="font-bold mb-3 text-primary-700">Novelty & Significance</h3>
-                                    <p className="text-gray-700 leading-relaxed">{review.novelty}</p>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-                                    <h3 className="font-bold mb-3 text-primary-700">Soundness</h3>
-                                    <p className="text-gray-700 leading-relaxed">{review.soundness}</p>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-                                    <h3 className="font-bold mb-3 text-primary-700">Clarity</h3>
-                                    <p className="text-gray-700 leading-relaxed">{review.clarity}</p>
+                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-amber-300 transition-colors">
+                                        <div className="flex items-center gap-2 mb-4 text-amber-600">
+                                            <MessageSquare className="w-5 h-5" />
+                                            <h3 className="font-bold text-gray-900">Clarity & Presentation</h3>
+                                        </div>
+                                        <p className="text-gray-600 leading-relaxed text-sm">
+                                            {review.clarity}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -258,7 +342,7 @@ export default function PaperDetail() {
                 )}
 
                 {activeTab === 'ask' && (
-                    <QABot paperId={id} projectId={paper?.projectId} />
+                    <QABot paperId={id} projectId={paper?.projectId?._id || paper?.projectId} />
                 )}
             </div>
         </div>

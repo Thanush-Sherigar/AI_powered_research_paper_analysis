@@ -102,7 +102,7 @@ Provide only the JSON, no additional commentary.`,
 
   extractConcepts: (paperText) => `You are an expert at extracting structured knowledge from research papers. Extract key concepts, entities, and relationships from the following paper.
 
-Identify:
+Identify (Limit to the top 20 most important nodes):
 - **Concepts**: Key ideas, theories, or frameworks
 - **Methods**: Algorithms, techniques, or approaches
 - **Datasets**: Named datasets used or introduced
@@ -315,6 +315,35 @@ Format your response as:
 **Answer**: [Your answer with citations]
 
 **Supporting Evidence**: [Brief explanation of which excerpts support your answer]`,
+
+  // ===== MIND MAP PROMPTS =====
+
+  generateMindMap: (paperText) => `You are an expert at structuring knowledge. Create a hierarchical mind map for the following research paper.
+
+The structure should be:
+- **Root**: The Paper Title
+- **Level 1**: Main themes or sections (e.g., Problem, Method, Results, Impact)
+- **Level 2**: Key concepts or details within those themes
+- **Level 3**: Specific examples or metrics (if applicable)
+
+Paper text:
+${paperText}
+
+Return as a hierarchical JSON object:
+{
+  "root": "Paper Title",
+  "children": [
+    {
+      "name": "Main Theme 1",
+      "children": [
+        { "name": "Sub-concept A" },
+        { "name": "Sub-concept B", "children": [{ "name": "Detail" }] }
+      ]
+    }
+  ]
+}
+
+Limit depth to 3 levels. Limit total nodes to ~30. Provide only the JSON.`,
 };
 
 export default prompts;

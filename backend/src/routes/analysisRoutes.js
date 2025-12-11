@@ -8,10 +8,13 @@ import {
     ask,
     getConceptGraph,
     getNoveltyRadar,
+    checkNoveltyWeb,
+    checkNoveltyPair,
     suggestExperimentsHandler,
     getReadingPath,
     citationCheck,
     getResourcesSummary,
+    getMindMap,
 } from '../controllers/analysisController.js';
 
 const router = express.Router();
@@ -42,6 +45,12 @@ router.get('/papers/:id/concept-graph', authenticate, getConceptGraph);
 // GET /api/projects/:id/novelty-radar
 router.get('/projects/:id/novelty-radar', authenticate, getNoveltyRadar);
 
+// POST /api/projects/:id/novelty/web
+router.post('/projects/:id/novelty/web', authenticate, checkNoveltyWeb);
+
+// POST /api/projects/:id/novelty/pair
+router.post('/projects/:id/novelty/pair', authenticate, checkNoveltyPair);
+
 // POST /api/papers/:id/suggest-experiments
 router.post('/papers/:id/suggest-experiments', authenticate, suggestExperimentsHandler);
 
@@ -53,5 +62,8 @@ router.post('/citation-check', authenticate, citationCheck);
 
 // GET /api/papers/:id/resources-summary
 router.get('/papers/:id/resources-summary', authenticate, getResourcesSummary);
+
+// GET /api/papers/:id/mind-map
+router.get('/papers/:id/mind-map', authenticate, getMindMap);
 
 export default router;

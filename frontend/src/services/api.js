@@ -119,6 +119,12 @@ export const analysisAPI = {
     getNoveltyRadar: (projectId) =>
         api.get(`/projects/${projectId}/novelty-radar`),
 
+    checkNoveltyWeb: (projectId, paperId) =>
+        api.post(`/projects/${projectId}/novelty/web`, { paperId }),
+
+    checkNoveltyPair: (projectId, paperIds) =>
+        api.post(`/projects/${projectId}/novelty/pair`, { paperIds }),
+
     suggestExperiments: (paperId, userIdea) =>
         api.post(`/papers/${paperId}/suggest-experiments`, { userIdea }),
 
@@ -130,6 +136,9 @@ export const analysisAPI = {
 
     getResourcesSummary: (paperId) =>
         api.get(`/papers/${paperId}/resources-summary`),
+
+    getMindMap: (paperId) =>
+        api.get(`/papers/${paperId}/mind-map`),
 };
 
 // ===== NOTES API =====

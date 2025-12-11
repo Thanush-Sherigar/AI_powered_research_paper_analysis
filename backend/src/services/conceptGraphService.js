@@ -24,7 +24,7 @@ export const extractConceptGraph = async (paper) => {
 
         const graph = await llm.generateJSON(prompt, {
             temperature: 0.5,
-            maxTokens: 2000,
+            maxTokens: 8000,
         });
 
         // Validate graph structure

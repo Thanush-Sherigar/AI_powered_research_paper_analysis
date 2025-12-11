@@ -162,7 +162,17 @@ class GeminiLLMClient extends LLMClient {
 
             const response = await result.response;
             const text = response.text();
-            const cleanText = text.replace(/```json\n?|\n?```/g, '').trim();
+
+            // Clean text - removing markdown blocks
+            let cleanText = text.replace(/```json\n?|\n?```/g, '').trim();
+
+            // Should also attempt to find the first { and last } if there is extra text
+            const firstBrace = cleanText.indexOf('{');
+            const lastBrace = cleanText.lastIndexOf('}');
+
+            if (firstBrace !== -1 && lastBrace !== -1) {
+                cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+            }
 
             return JSON.parse(cleanText);
         } catch (error) {

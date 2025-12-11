@@ -9,9 +9,13 @@ import { semanticSearch } from '../services/searchService.js';
 import { answerQuestion } from '../services/qaService.js';
 import { suggestExperiments } from '../services/experimentService.js';
 import { generateReadingPath } from '../services/readingPathService.js';
+import { generateMindMap } from '../services/mindMapService.js';
 import { checkCitations } from '../services/citationService.js';
 import { extractResources } from '../services/resourceService.js';
 import { AppError } from '../middlewares/errorMiddleware.js';
+import { checkWeb } from '../services/plagiarismService.js';
+import axios from 'axios';
+import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -97,8 +101,11 @@ export const getReview = async (req, res, next) => {
         // Check cache
         if (paper.cachedAnalyses && paper.cachedAnalyses.review) {
             const cachedReview = paper.cachedAnalyses.review;
-            // Only return cache if it's not an error message
-            if (!cachedReview.includes('The AI service is currently unavailable')) {
+            // Only return cache if it's not an error message/object
+            const isErrorMock = typeof cachedReview === 'object' && cachedReview.assessment === "AI Service Unavailable (Mock)";
+            const isErrorString = typeof cachedReview === 'string' && cachedReview.includes('The AI service is currently unavailable');
+
+            if (!isErrorMock && !isErrorString) {
                 logger.info('Returning cached review');
                 return res.json({
                     review: cachedReview,
@@ -111,7 +118,9 @@ export const getReview = async (req, res, next) => {
         const review = await generateReview(paper);
 
         // Cache result ONLY if it's not an error message
-        if (!review.includes('The AI service is currently unavailable')) {
+        const isErrorMock = typeof review === 'object' && review.assessment === "AI Service Unavailable (Mock)";
+
+        if (!isErrorMock) {
             if (!paper.cachedAnalyses) {
                 paper.cachedAnalyses = {};
             }
@@ -314,6 +323,99 @@ export const getNoveltyRadar = async (req, res, next) => {
 };
 
 /**
+ * Check novelty against web
+ * POST /api/projects/:id/novelty/web
+ * Body: { paperId }
+ */
+export const checkNoveltyWeb = async (req, res, next) => {
+    try {
+        const { id } = req.params; // Project ID
+        const { paperId } = req.body;
+
+        if (!paperId) {
+            throw new AppError('Paper ID required', 400, 'INVALID_INPUT');
+        }
+
+        const userPaper = await Paper.findById(paperId);
+        if (!userPaper) {
+            throw new AppError('Paper not found', 404, 'PAPER_NOT_FOUND');
+        }
+
+        // Search web for related papers using the title
+        // We use the same Google Search config as plagiarism service
+        const apiKey = config.googleSearch.apiKey;
+        const cx = config.googleSearch.searchEngineId;
+
+        if (!apiKey || !cx) {
+            throw new AppError('Google Search not configured', 503, 'SERVICE_UNAVAILABLE');
+        }
+
+        const query = userPaper.title;
+        const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q="${encodeURIComponent(query)}"`;
+
+        const response = await axios.get(searchUrl);
+        const items = response.data.items || [];
+
+        // Convert web results to "Paper" objects for comparison
+        const webPapers = items.slice(0, 4).map(item => ({
+            title: item.title,
+            abstract: item.snippet, // Use snippet as abstract
+            authors: [],
+            isWebSource: true,
+            url: item.link
+        }));
+
+        if (webPapers.length === 0) {
+            return res.json({
+                summary: "No similar papers found on the web to compare against.",
+                papers: [{
+                    title: userPaper.title,
+                    noveltyScore: 10,
+                    uniqueContributions: ["Analysis limited - no web matches found."],
+                    overlaps: []
+                }]
+            });
+        }
+
+        const papersToCompare = [userPaper, ...webPapers];
+        const analysis = await analyzeNovelty(papersToCompare);
+
+        res.json(analysis);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Check novelty pairwise (2 papers)
+ * POST /api/projects/:id/novelty/pair
+ * Body: { paperIds: [id1, id2] }
+ */
+export const checkNoveltyPair = async (req, res, next) => {
+    try {
+        const { paperIds } = req.body;
+
+        if (!paperIds || !Array.isArray(paperIds) || paperIds.length !== 2) {
+            throw new AppError('Exactly 2 paper IDs required', 400, 'INVALID_INPUT');
+        }
+
+        const papers = await Paper.find({ _id: { $in: paperIds } });
+
+        if (papers.length !== 2) {
+            throw new AppError('Papers not found', 404, 'PAPERS_NOT_FOUND');
+        }
+
+        const analysis = await analyzeNovelty(papers);
+
+        res.json(analysis);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Suggest experiments
  * POST /api/papers/:id/suggest-experiments
  * Body: { userIdea }
@@ -460,6 +562,53 @@ export const getResourcesSummary = async (req, res, next) => {
 
         res.json({
             resources,
+            cached: false,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Get mind map
+ * GET /api/papers/:id/mind-map
+ */
+export const getMindMap = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const paper = await Paper.findById(id).populate('projectId', 'userId');
+
+        if (!paper) {
+            throw new AppError('Paper not found', 404, 'PAPER_NOT_FOUND');
+        }
+
+        // Check access
+        if (paper.projectId.userId.toString() !== req.user.id) {
+            throw new AppError('Access denied', 403, 'ACCESS_DENIED');
+        }
+
+        // Check cache
+        if (paper.cachedAnalyses && paper.cachedAnalyses.mindMap) {
+            logger.info('Returning cached mind map');
+            return res.json({
+                mindMap: paper.cachedAnalyses.mindMap,
+                cached: true,
+            });
+        }
+
+        // Generate mind map
+        const mindMap = await generateMindMap(paper);
+
+        // Cache result
+        if (!paper.cachedAnalyses) {
+            paper.cachedAnalyses = {};
+        }
+        paper.cachedAnalyses.mindMap = mindMap;
+        await paper.save();
+
+        res.json({
+            mindMap,
             cached: false,
         });
     } catch (error) {
