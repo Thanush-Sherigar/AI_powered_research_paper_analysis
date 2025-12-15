@@ -10,19 +10,19 @@ import logger from '../utils/logger.js';
 
 /**
  * Generate conference-style review
- * @param {Object} paper - Paper object with cleanText
+ * @param {string} domain - Domain/Field of study (default: "computer science")
  * @returns {Promise<Object>} Review object with structured feedback
  */
-export const generateReview = async (paper) => {
+export const generateReview = async (paper, domain = "computer science") => {
     try {
-        logger.info(`Generating review for paper: ${paper.title}`);
+        logger.info(`Generating review for paper: ${paper.title} (Domain: ${domain})`);
 
         const llm = getLLMClient();
         // Truncate to ~12000 tokens (approx 48k chars) for review - we need more context than summary
         const limitedText = truncateToTokenLimit(paper.cleanText, 12000);
         logger.debug(`Original text length: ${paper.cleanText.length}, Truncated length: ${limitedText.length}`);
 
-        const prompt = prompts.conferenceReview(limitedText);
+        const prompt = prompts.conferenceReview(limitedText, domain);
 
         // Use generateJSON for reliable structured output
         const review = await llm.generateJSON(prompt, {

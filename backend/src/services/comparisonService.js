@@ -23,10 +23,10 @@ export const comparePapers = async (papers) => {
     }
 
     logger.info(`Comparing ${papers.length} papers`);
-    
+
     const llm = getLLMClient();
     const prompt = prompts.comparePapers(papers);
-    
+
     const comparisonText = await llm.generate(prompt, {
       temperature: 0.7,
       maxTokens: 3000,
@@ -39,6 +39,36 @@ export const comparePapers = async (papers) => {
     };
   } catch (error) {
     logger.error(`Paper comparison error: ${error.message}`);
+    throw error;
+  }
+};
+
+/**
+ * Compare two versions of a paper
+ * @param {Object} oldPaper - Old version paper object
+ * @param {Object} newPaper - New version paper object
+ * @returns {Promise<Object>} Comparison result
+ */
+export const compareVersions = async (oldPaper, newPaper) => {
+  try {
+    logger.info(`Comparing versions: ${oldPaper._id} vs ${newPaper._id}`);
+
+    const llm = getLLMClient();
+    const prompt = prompts.compareVersions(oldPaper, newPaper);
+
+    const comparisonText = await llm.generate(prompt, {
+      temperature: 0.5,
+      maxTokens: 3000,
+    });
+
+    return {
+      oldPaperId: oldPaper._id,
+      newPaperId: newPaper._id,
+      comparison: comparisonText,
+      generatedAt: new Date(),
+    };
+  } catch (error) {
+    logger.error(`Version comparison error: ${error.message}`);
     throw error;
   }
 };

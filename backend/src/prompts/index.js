@@ -48,7 +48,7 @@ Provide your response in Markdown format with clear headings.`,
 
   // ===== REVIEW PROMPTS =====
 
-  conferenceReview: (paperText) => `You are an expert reviewer for a top-tier computer science conference (e.g., NeurIPS, ICML, CVPR). Write a comprehensive peer review for the following paper.
+  conferenceReview: (paperText, domain = "computer science") => `You are an expert reviewer for a top-tier ${domain} conference. Write a comprehensive peer review for the following paper.
 
 Paper text:
 ${paperText}
@@ -344,6 +344,83 @@ Return as a hierarchical JSON object:
 }
 
 Limit depth to 3 levels. Limit total nodes to ~30. Provide only the JSON.`,
+  // ===== ETHICS & BIAS PROMPTS =====
+
+  checkBiasAndEthics: (paperText) => `You are an expert in research ethics and fair AI/data practices. Analyze the following paper for potential ethical issues and biases.
+
+Paper text:
+${paperText}
+
+Evaluate the following:
+1. **Data Privacy & Consent**: Are human subjects involved? Is consent clear?
+2. **Bias & Fairness**: Does the data or method have potential biases (gender, race, etc.)?
+3. **Societal Impact**: Potential negative dual-use or harmful consequences.
+4. **Reproducibility & Transparency**: Are code/data shared? Is the method transparent?
+
+Return a JSON object:
+{
+  "ethicalIssues": [
+    {
+      "category": "Privacy|Bias|Impact|Transparency",
+      "severity": "Low|Medium|High",
+      "description": "Description of the issue",
+      "recommendation": "How to mitigate it"
+    }
+  ],
+  "overallAssessment": "Safe|Caution|Risky",
+  "summary": "Brief summary of ethical standing"
+}
+
+Provide only the JSON.`,
+
+  checkBiasAndEthicsSummary: (paperText) => `You are an expert in research ethics. Provide a HIGH-LEVEL executive summary of potential ethical concerns in the following paper. Do NOT list specific issues in detail yet.
+
+Paper text:
+${paperText}
+
+Return a JSON object:
+{
+  "summary": "A concise 2-3 sentence overview of the ethical standing of this paper.",
+  "overallAssessment": "Safe|Caution|Risky",
+  "hasPotentialIssues": true|false
+}
+
+Provide only the JSON.`,
+
+  // ===== COMPARISON PROMPTS =====
+
+  comparePapers: (papers) => `You are an expert research analyst. Compare the following research papers.
+
+Papers:
+${papers.map((p, i) => `\n### Paper ${i + 1}: ${p.title}\n${p.cleanText.substring(0, 1000)}...`).join('\n\n')}
+
+Provide a structured comparison:
+
+1. **Common Themes**: What do they share?
+2. **Methodological Differences**: How do they differ in approach?
+3. **Performance/Results**: Which performs better and why?
+4. **Pros & Cons**:
+   - Paper 1: Pros/Cons
+   - Paper 2: Pros/Cons...
+
+5. **Recommendation**: When to use which?
+
+Return response in Markdown.`,
+
+  compareVersions: (oldPaper, newPaper) => `You are an expert editor. Compare two versions of the same research paper to highlight revisions.
+
+Version 1 (Old):
+${oldPaper.cleanText.substring(0, 3000)}...
+
+Version 2 (New):
+${newPaper.cleanText.substring(0, 3000)}...
+
+Identify key changes:
+1. **Major Content Changes**: New experiments, sections, or logic.
+2. **Refinements**: Clarifications, rephrasing (ignore minor grammar fixes).
+3. **Assessment**: Has the paper improved? Why?
+
+Return response in Markdown.`
 };
 
 export default prompts;

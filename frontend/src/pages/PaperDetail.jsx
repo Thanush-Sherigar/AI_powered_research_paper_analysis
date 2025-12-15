@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { paperAPI, analysisAPI } from '../services/api';
-import { ArrowLeft, FileText, Users, Calendar, CheckCircle, XCircle, Award, BookOpen, Zap, Layout, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { paperAPI, analysisAPI, projectAPI } from '../services/api';
+import { ArrowLeft, FileText, Users, Calendar, CheckCircle, XCircle, Award, BookOpen, Zap, Layout, MessageSquare, ThumbsUp, ThumbsDown, Shield, GitBranch } from 'lucide-react';
 import ConceptGraph from '../components/ConceptGraph';
 import QABot from '../components/QABot';
 import NotesPanel from '../components/NotesPanel';
@@ -17,7 +17,15 @@ export default function PaperDetail() {
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [loadingReview, setLoadingReview] = useState(false);
 
-    console.log('PaperDetail render, review:', review);
+    // New Features State
+    const [ethics, setEthics] = useState(null);
+    const [loadingEthics, setLoadingEthics] = useState(false);
+    const [domain, setDomain] = useState('computer science');
+
+    const [versionComparison, setVersionComparison] = useState(null);
+    const [loadingComparison, setLoadingComparison] = useState(false);
+    const [projectPapers, setProjectPapers] = useState([]);
+    const [compareWithId, setCompareWithId] = useState('');
 
     useEffect(() => {
         loadPaper();
@@ -29,6 +37,10 @@ export default function PaperDetail() {
         } else if (activeTab === 'review' && !review) {
             // Optional: Auto-load review or wait for user click
             // loadReview();
+        } else if (activeTab === 'ethics' && !ethics) {
+            loadEthics();
+        } else if (activeTab === 'versions' && projectPapers.length === 0) {
+            loadProjectPapers();
         }
     }, [activeTab, summaryMode]);
 
@@ -58,12 +70,51 @@ export default function PaperDetail() {
     const loadReview = async () => {
         setLoadingReview(true);
         try {
-            const response = await analysisAPI.getReview(id);
+            const response = await analysisAPI.getReview(id, domain);
             setReview(response.data.review);
         } catch (error) {
             console.error('Failed to load review:', error);
         } finally {
             setLoadingReview(false);
+        }
+    };
+
+    const loadEthics = async (mode = 'summary') => {
+        setLoadingEthics(true);
+        try {
+            const response = await analysisAPI.checkEthics(id, mode);
+            // If we already have ethics data and we are just loading details, merge them
+            // But since the structure is slightly different (summary has no list), we can just overwrite or handle carefully.
+            // Actually, for simplicity, let's just set the new data. Use a flag for 'isDetailed'.
+            setEthics({ ...response.data, isDetailed: mode === 'detailed' });
+        } catch (error) {
+            console.error('Failed to load ethics check:', error);
+        } finally {
+            setLoadingEthics(false);
+        }
+    };
+
+    const loadProjectPapers = async () => {
+        if (!paper?.projectId?._id && !paper?.projectId) return;
+        try {
+            const projectId = paper.projectId._id || paper.projectId;
+            const response = await projectAPI.getPapers(projectId);
+            setProjectPapers(response.data.filter(p => p._id !== id));
+        } catch (error) {
+            console.error('Failed to load project papers:', error);
+        }
+    };
+
+    const runVersionComparison = async () => {
+        if (!compareWithId) return;
+        setLoadingComparison(true);
+        try {
+            const response = await analysisAPI.compareVersions(compareWithId, id);
+            setVersionComparison(response.data);
+        } catch (error) {
+            console.error('Failed to compare versions:', error);
+        } finally {
+            setLoadingComparison(false);
         }
     };
 
@@ -78,6 +129,8 @@ export default function PaperDetail() {
     const tabs = [
         { id: 'summary', label: 'Summaries' },
         { id: 'review', label: 'Review' },
+        { id: 'ethics', label: 'Bias & Ethics' },
+        { id: 'versions', label: 'Revision Compare' },
         { id: 'graph', label: 'Concept Graph' },
         { id: 'notes', label: 'Notes' },
         { id: 'ask', label: 'Ask Questions' },
@@ -124,12 +177,12 @@ export default function PaperDetail() {
             </div>
 
             <div className="glass-card p-6">
-                <div className="flex space-x-2 mb-6 border-b border-white/10">
+                <div className="flex space-x-2 mb-6 border-b border-white/10 overflow-x-auto">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 font-medium transition-colors ${activeTab === tab.id
+                            className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
                                 ? 'text-primary-600 border-b-2 border-primary-600'
                                 : 'text-gray-500 hover:text-gray-900'
                                 }`}
@@ -177,6 +230,22 @@ export default function PaperDetail() {
                                 <p className="text-gray-500 mb-6">
                                     Generate a comprehensive conference-style peer review for this paper.
                                 </p>
+                                <div className="max-w-xs mx-auto mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Target Domain / Audience</label>
+                                    <select
+                                        value={domain}
+                                        onChange={(e) => setDomain(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    >
+                                        <option value="computer science">Computer Science (General)</option>
+                                        <option value="machine learning">Machine Learning (NeurIPS/ICML)</option>
+                                        <option value="computer vision">Computer Vision (CVPR/ICCV)</option>
+                                        <option value="nlp">NLP (ACL/EMNLP)</option>
+                                        <option value="medicine">Medicine / Biomedical</option>
+                                        <option value="social science">Social Science</option>
+                                        <option value="physics">Physics</option>
+                                    </select>
+                                </div>
                                 <button
                                     onClick={loadReview}
                                     disabled={loadingReview}
@@ -185,7 +254,7 @@ export default function PaperDetail() {
                                     {loadingReview ? (
                                         <>
                                             <div className="spinner w-5 h-5 mr-2 border-white/20 border-t-white"></div>
-                                            Generating Review...
+                                            Generating {domain} Review...
                                         </>
                                     ) : (
                                         'Generate Review'
@@ -251,7 +320,7 @@ export default function PaperDetail() {
                                         </div>
                                         <div className="p-6">
                                             <ul className="space-y-4">
-                                                {review.strengths.map((item, i) => (
+                                                {review.strengths?.map((item, i) => (
                                                     <li key={i} className="flex gap-4 group/item">
                                                         <div className="mt-1 flex-shrink-0">
                                                             <CheckCircle className="w-5 h-5 text-green-500" />
@@ -273,7 +342,7 @@ export default function PaperDetail() {
                                         </div>
                                         <div className="p-6">
                                             <ul className="space-y-4">
-                                                {review.weaknesses.map((item, i) => (
+                                                {review.weaknesses?.map((item, i) => (
                                                     <li key={i} className="flex gap-4 group/item">
                                                         <div className="mt-1 flex-shrink-0">
                                                             <XCircle className="w-5 h-5 text-red-500" />
@@ -328,6 +397,107 @@ export default function PaperDetail() {
                                         </p>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'ethics' && (
+                    <div>
+                        {loadingEthics ? (
+                            <div className="flex justify-center py-12">
+                                <div className="spinner"></div>
+                            </div>
+                        ) : ethics ? (
+                            <div className="space-y-6 animate-fadeIn">
+                                <div className={`p-6 rounded-xl border ${ethics.overallAssessment === 'Safe' ? 'bg-green-50 border-green-200' : ethics.overallAssessment === 'Risky' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <Shield className={`w-6 h-6 ${ethics.overallAssessment === 'Safe' ? 'text-green-600' : ethics.overallAssessment === 'Risky' ? 'text-red-600' : 'text-yellow-600'}`} />
+                                        <h3 className="text-xl font-bold">Overall Assessment: {ethics.overallAssessment}</h3>
+                                    </div>
+                                    <p className="text-gray-700">{ethics.summary}</p>
+
+                                    {!ethics.isDetailed && (
+                                        <div className="mt-4">
+                                            <button
+                                                onClick={() => loadEthics('detailed')}
+                                                className="text-primary-600 font-medium hover:text-primary-800 flex items-center gap-1"
+                                            >
+                                                View Detailed Analysis <ArrowLeft className="w-4 h-4 rotate-180" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {ethics.isDetailed && (
+                                    <div className="grid gap-4 animate-fadeIn">
+                                        {ethics.ethicalIssues?.map((issue, idx) => (
+                                            <div key={idx} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="font-semibold text-gray-800">{issue.category}</span>
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${issue.severity === 'High' ? 'bg-red-100 text-red-700' :
+                                                        issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                                            'bg-blue-100 text-blue-700'
+                                                        }`}>
+                                                        {issue.severity} Severity
+                                                    </span>
+                                                </div>
+                                                <p className="text-gray-600 mb-2">{issue.description}</p>
+                                                <div className="bg-gray-50 p-2 rounded text-sm text-gray-500">
+                                                    <strong>Recommendation:</strong> {issue.recommendation}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 text-gray-500">
+                                <p className="mb-4">Analyze this paper for ethical issues, bias, and potential risks.</p>
+                                <button
+                                    onClick={() => loadEthics('summary')}
+                                    disabled={loadingEthics}
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    Check Ethics
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'versions' && (
+                    <div>
+                        <div className="mb-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <GitBranch className="w-5 h-5" />
+                                Compare with another version
+                            </h3>
+                            <div className="flex gap-4">
+                                <select
+                                    className="flex-1 p-2 border border-gray-300 rounded-lg"
+                                    value={compareWithId}
+                                    onChange={(e) => setCompareWithId(e.target.value)}
+                                >
+                                    <option value="">Select a paper to compare with...</option>
+                                    {projectPapers.map(p => (
+                                        <option key={p._id} value={p._id}>{p.title}</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={runVersionComparison}
+                                    disabled={!compareWithId || loadingComparison}
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {loadingComparison ? 'Comparing...' : 'Run Comparison'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {versionComparison && (
+                            <div className="prose max-w-none bg-white p-8 rounded-xl border border-gray-200 shadow-sm animate-fadeIn">
+                                <h3>Version Comparison Report</h3>
+                                <div className="whitespace-pre-wrap">{versionComparison.comparison}</div>
                             </div>
                         )}
                     </div>

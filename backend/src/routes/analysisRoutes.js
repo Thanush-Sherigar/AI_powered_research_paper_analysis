@@ -15,6 +15,8 @@ import {
     citationCheck,
     getResourcesSummary,
     getMindMap,
+    checkEthicsHandler,
+    compareVersionsHandler,
 } from '../controllers/analysisController.js';
 
 const router = express.Router();
@@ -65,5 +67,11 @@ router.get('/papers/:id/resources-summary', authenticate, getResourcesSummary);
 
 // GET /api/papers/:id/mind-map
 router.get('/papers/:id/mind-map', authenticate, getMindMap);
+
+// POST /api/papers/:id/ethics-check
+router.post('/papers/:id/ethics-check', authenticate, checkEthicsHandler);
+
+// POST /api/compare-versions
+router.post('/compare-versions', authenticate, compareVersionsHandler);
 
 export default router;

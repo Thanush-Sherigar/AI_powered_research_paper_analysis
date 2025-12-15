@@ -12,6 +12,8 @@ import { generateReadingPath } from '../services/readingPathService.js';
 import { generateMindMap } from '../services/mindMapService.js';
 import { checkCitations } from '../services/citationService.js';
 import { extractResources } from '../services/resourceService.js';
+import { checkEthics } from '../services/ethicsService.js';
+import { compareVersions } from '../services/comparisonService.js';
 import { AppError } from '../middlewares/errorMiddleware.js';
 import { checkWeb } from '../services/plagiarismService.js';
 import axios from 'axios';
@@ -115,7 +117,7 @@ export const getReview = async (req, res, next) => {
         }
 
         // Generate review
-        const review = await generateReview(paper);
+        const review = await generateReview(paper, domain);
 
         // Cache result ONLY if it's not an error message
         const isErrorMock = typeof review === 'object' && review.assessment === "AI Service Unavailable (Mock)";
@@ -611,6 +613,71 @@ export const getMindMap = async (req, res, next) => {
             mindMap,
             cached: false,
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+/**
+ * Check ethics
+ * POST /api/papers/:id/ethics-check
+ */
+export const checkEthicsHandler = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const paper = await Paper.findById(id).populate('projectId', 'userId');
+
+        if (!paper) {
+            throw new AppError('Paper not found', 404, 'PAPER_NOT_FOUND');
+        }
+
+        if (paper.projectId.userId.toString() !== req.user.id) {
+            throw new AppError('Access denied', 403, 'ACCESS_DENIED');
+        }
+
+        const { mode } = req.query; // 'summary' or 'detailed'
+        const ethics = await checkEthics(paper, mode);
+
+        res.json(ethics);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Compare versions
+ * POST /api/compare-versions
+ * Body: { oldPaperId, newPaperId }
+ */
+export const compareVersionsHandler = async (req, res, next) => {
+    try {
+        const { oldPaperId, newPaperId } = req.body;
+
+        if (!oldPaperId || !newPaperId) {
+            throw new AppError('Both oldPaperId and newPaperId are required', 400, 'INVALID_INPUT');
+        }
+
+        const papers = await Paper.find({ _id: { $in: [oldPaperId, newPaperId] } }).populate('projectId', 'userId');
+
+        if (papers.length !== 2) {
+            throw new AppError('Papers not found', 404, 'PAPERS_NOT_FOUND');
+        }
+
+        const allowed = papers.every(p => p.projectId.userId.toString() === req.user.id);
+        if (!allowed) {
+            throw new AppError('Access denied', 403, 'ACCESS_DENIED');
+        }
+
+        const [p1, p2] = papers;
+        // Determine which is old/new if not strictly ordered by ID input, but here we trust input map
+        const oldPaper = p1._id.toString() === oldPaperId ? p1 : p2;
+        const newPaper = p1._id.toString() === newPaperId ? p1 : p2;
+
+        const comparison = await compareVersions(oldPaper, newPaper);
+
+        res.json(comparison);
     } catch (error) {
         next(error);
     }

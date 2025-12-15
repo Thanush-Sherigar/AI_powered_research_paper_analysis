@@ -101,8 +101,8 @@ export const analysisAPI = {
     getSummaries: (paperId, mode = 'tldr') =>
         api.get(`/papers/${paperId}/summaries?mode=${mode}`),
 
-    getReview: (paperId) =>
-        api.post(`/papers/${paperId}/review`),
+    getReview: (paperId, domain = 'computer science') =>
+        api.post(`/papers/${paperId}/review`, { domain }),
 
     compare: (paperIds) =>
         api.post('/compare', { paperIds }),
@@ -139,6 +139,12 @@ export const analysisAPI = {
 
     getMindMap: (paperId) =>
         api.get(`/papers/${paperId}/mind-map`),
+
+    checkEthics: (paperId, mode = 'detailed') =>
+        api.post(`/papers/${paperId}/ethics-check?mode=${mode}`),
+
+    compareVersions: (oldPaperId, newPaperId) =>
+        api.post('/compare-versions', { oldPaperId, newPaperId }),
 };
 
 // ===== NOTES API =====
