@@ -12,8 +12,8 @@ export function GridBackground({ children, className }) {
             <div
                 className={cn(
                     "absolute inset-0 pointer-events-none",
-                    "[background-size:40px_40px]",
-                    "[background-image:linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)]"
+                    "[background-size:80px_80px]",
+                    "[background-image:linear-gradient(to_right,rgba(59,130,246,0.5)_2px,transparent_2px),linear-gradient(to_bottom,rgba(59,130,246,0.5)_2px,transparent_2px)]"
                 )}
             />
             {/* Radial gradient for the container to give a faded look */}

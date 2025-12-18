@@ -162,7 +162,8 @@ export default function Login() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: 0.8 }}
-                    className="relative z-10 mx-auto max-w-xl py-4 text-center text-lg text-black font-normal"
+                    className="relative z-10 mx-auto max-w-2xl py-6 text-center text-xl md:text-2xl font-medium bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent tracking-wide leading-relaxed"
+                    style={{ textShadow: '0 2px 10px rgba(59, 130, 246, 0.1)' }}
                 >
                     AI-powered research paper analysis, review, and insights. Get comprehensive summaries,
                     critical reviews, and comparative analysis in seconds.
