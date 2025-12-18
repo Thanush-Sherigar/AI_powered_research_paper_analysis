@@ -5,7 +5,7 @@ export function GridBackground({ children, className }) {
     return (
         <div
             className={cn(
-                "relative flex w-full h-full items-center justify-center bg-white dark:bg-black overflow-hidden",
+                "relative flex w-full h-full items-center justify-center bg-white dark:bg-black",
                 className
             )}
         >

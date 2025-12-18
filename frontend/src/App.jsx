@@ -38,12 +38,12 @@ function App() {
     const { isAuthenticated } = useAuth();
 
     return (
-        <div className="flex h-screen bg-zinc-50 dark:bg-black overflow-hidden relative">
+        <div className="flex items-start min-h-screen bg-zinc-50 dark:bg-black relative">
             {isAuthenticated && <Sidebar />}
 
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
-                <GridBackground className="w-full h-full flex flex-col">
-                    <main className="flex-1 overflow-y-auto w-full">
+            <div className="flex-1 flex flex-col min-w-0 relative z-10">
+                <GridBackground className="w-full flex flex-col">
+                    <main className="flex-1 w-full">
                         <div className="min-h-full flex flex-col w-full">
                             <div className="flex-1 p-8">
                                 <Routes>
