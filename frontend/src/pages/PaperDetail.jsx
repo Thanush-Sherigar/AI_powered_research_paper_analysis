@@ -17,7 +17,6 @@ export default function PaperDetail() {
     const [loadingSummary, setLoadingSummary] = useState(false);
     const [loadingReview, setLoadingReview] = useState(false);
 
-    // New Features State
     const [ethics, setEthics] = useState(null);
     const [loadingEthics, setLoadingEthics] = useState(false);
     const [domain, setDomain] = useState('computer science');
@@ -35,8 +34,6 @@ export default function PaperDetail() {
         if (activeTab === 'summary') {
             loadSummary();
         } else if (activeTab === 'review' && !review) {
-            // Optional: Auto-load review or wait for user click
-            // loadReview();
         } else if (activeTab === 'ethics' && !ethics) {
             loadEthics();
         } else if (activeTab === 'versions' && projectPapers.length === 0) {
@@ -49,7 +46,6 @@ export default function PaperDetail() {
             const response = await paperAPI.getOne(id);
             setPaper(response.data);
         } catch (error) {
-            console.error('Failed to load paper:', error);
         } finally {
             setLoading(false);
         }
@@ -61,7 +57,6 @@ export default function PaperDetail() {
             const response = await analysisAPI.getSummaries(id, summaryMode);
             setSummary(response.data.summary);
         } catch (error) {
-            console.error('Failed to load summary:', error);
         } finally {
             setLoadingSummary(false);
         }
@@ -73,7 +68,6 @@ export default function PaperDetail() {
             const response = await analysisAPI.getReview(id, domain);
             setReview(response.data.review);
         } catch (error) {
-            console.error('Failed to load review:', error);
         } finally {
             setLoadingReview(false);
         }
@@ -83,12 +77,8 @@ export default function PaperDetail() {
         setLoadingEthics(true);
         try {
             const response = await analysisAPI.checkEthics(id, mode);
-            // If we already have ethics data and we are just loading details, merge them
-            // But since the structure is slightly different (summary has no list), we can just overwrite or handle carefully.
-            // Actually, for simplicity, let's just set the new data. Use a flag for 'isDetailed'.
             setEthics({ ...response.data, isDetailed: mode === 'detailed' });
         } catch (error) {
-            console.error('Failed to load ethics check:', error);
         } finally {
             setLoadingEthics(false);
         }
@@ -101,7 +91,6 @@ export default function PaperDetail() {
             const response = await projectAPI.getPapers(projectId);
             setProjectPapers(response.data.filter(p => p._id !== id));
         } catch (error) {
-            console.error('Failed to load project papers:', error);
         }
     };
 
@@ -112,7 +101,6 @@ export default function PaperDetail() {
             const response = await analysisAPI.compareVersions(compareWithId, id);
             setVersionComparison(response.data);
         } catch (error) {
-            console.error('Failed to compare versions:', error);
         } finally {
             setLoadingComparison(false);
         }
@@ -146,20 +134,21 @@ export default function PaperDetail() {
                 Back to Project
             </Link>
 
-            <div className="glass-card p-8 mb-6">
-                <div className="flex items-start space-x-4 mb-6">
-                    <FileText className="w-12 h-12 text-primary-400 flex-shrink-0" />
+
+            <div className="glass-card p-6 mb-6">
+                <div className="flex items-start space-x-3 mb-4">
+                    <FileText className="w-8 h-8 text-primary-400 flex-shrink-0" />
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold mb-3">{paper?.title}</h1>
+                        <h1 className="text-xl font-bold mb-2">{paper?.title}</h1>
                         {paper?.authors && paper.authors.length > 0 && (
-                            <div className="flex items-center text-gray-400 mb-2">
-                                <Users className="w-4 h-4 mr-2" />
+                            <div className="flex items-center text-gray-500 text-sm mb-1">
+                                <Users className="w-3.5 h-3.5 mr-1.5" />
                                 {paper.authors.join(', ')}
                             </div>
                         )}
                         {paper?.metadata?.year && (
-                            <div className="flex items-center text-gray-400">
-                                <Calendar className="w-4 h-4 mr-2" />
+                            <div className="flex items-center text-gray-500 text-sm">
+                                <Calendar className="w-3.5 h-3.5 mr-1.5" />
                                 {paper.metadata.year}
                             </div>
                         )}
@@ -167,353 +156,374 @@ export default function PaperDetail() {
                 </div>
 
                 {paper?.abstract && (
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                        <h3 className="font-semibold mb-2 text-gray-900">Abstract</h3>
-                        <p className="text-gray-700 text-sm leading-relaxed">
+                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                        <h3 className="font-semibold mb-1.5 text-gray-900 text-sm">Abstract</h3>
+                        <p className="text-gray-700 text-xs leading-relaxed">
                             {paper.abstract}
                         </p>
                     </div>
                 )}
             </div>
 
-            <div className="glass-card p-6">
-                <div className="flex space-x-2 mb-6 border-b border-white/10 overflow-x-auto">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                                ? 'text-primary-600 border-b-2 border-primary-600'
-                                : 'text-gray-500 hover:text-gray-900'
-                                }`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+            <div className="glass-card overflow-hidden">
+                {/* Modern Navigation Bar */}
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                    <div className="flex space-x-1 p-2 overflow-x-auto scrollbar-hide">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === tab.id
+                                    ? 'bg-white text-blue-600 shadow-md ring-2 ring-blue-100'
+                                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                                    }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {activeTab === 'summary' && (
-                    <div>
-                        <div className="flex space-x-2 mb-4">
-                            {['tldr', 'paragraph', 'detailed'].map((mode) => (
-                                <button
-                                    key={mode}
-                                    onClick={() => setSummaryMode(mode)}
-                                    className={`px-4 py-2 rounded-lg transition-colors ${summaryMode === mode
-                                        ? 'bg-primary-600 text-white'
-                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                                        }`}
-                                >
-                                    {mode.toUpperCase()}
-                                </button>
-                            ))}
-                        </div>
+                {/* Content Area */}
+                <div className="p-6">
 
-                        {loadingSummary ? (
-                            <div className="flex justify-center py-12">
-                                <div className="spinner"></div>
-                            </div>
-                        ) : summary ? (
-                            <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
-                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                    {summary}
-                                </p>
-                            </div>
-                        ) : null}
-                    </div>
-                )}
-
-                {activeTab === 'review' && (
-                    <div>
-                        {!review ? (
-                            <div className="text-center py-12">
-                                <p className="text-gray-500 mb-6">
-                                    Generate a comprehensive conference-style peer review for this paper.
-                                </p>
-                                <div className="max-w-xs mx-auto mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Target Domain / Audience</label>
-                                    <select
-                                        value={domain}
-                                        onChange={(e) => setDomain(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    {activeTab === 'summary' && (
+                        <div>
+                            <div className="flex space-x-2 mb-4">
+                                {['tldr', 'paragraph', 'detailed'].map((mode) => (
+                                    <button
+                                        key={mode}
+                                        onClick={() => setSummaryMode(mode)}
+                                        className={`px-4 py-2 rounded-lg transition-colors ${summaryMode === mode
+                                            ? 'bg-primary-600 text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                            }`}
                                     >
-                                        <option value="computer science">Computer Science (General)</option>
-                                        <option value="machine learning">Machine Learning (NeurIPS/ICML)</option>
-                                        <option value="computer vision">Computer Vision (CVPR/ICCV)</option>
-                                        <option value="nlp">NLP (ACL/EMNLP)</option>
-                                        <option value="medicine">Medicine / Biomedical</option>
-                                        <option value="social science">Social Science</option>
-                                        <option value="physics">Physics</option>
-                                    </select>
-                                </div>
-                                <button
-                                    onClick={loadReview}
-                                    disabled={loadingReview}
-                                    className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
-                                >
-                                    {loadingReview ? (
-                                        <>
-                                            <div className="spinner w-5 h-5 mr-2 border-white/20 border-t-white"></div>
-                                            Generating {domain} Review...
-                                        </>
-                                    ) : (
-                                        'Generate Review'
-                                    )}
-                                </button>
+                                        {mode.toUpperCase()}
+                                    </button>
+                                ))}
                             </div>
-                        ) : (
-                            <div className="space-y-8 animate-fadeIn">
-                                {/* Score Section */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                                    <div className="bg-slate-900 text-white p-6 flex flex-col md:flex-row items-center gap-8">
-                                        <div className="relative">
-                                            {/* Score Ring SVG */}
-                                            <svg className="w-32 h-32 transform -rotate-90">
-                                                <circle
-                                                    className="text-slate-700"
-                                                    strokeWidth="8"
-                                                    stroke="currentColor"
-                                                    fill="transparent"
-                                                    r="58"
-                                                    cx="64"
-                                                    cy="64"
-                                                />
-                                                <circle
-                                                    className={review.overallScore >= 7 ? "text-green-500" : review.overallScore >= 5 ? "text-yellow-500" : "text-red-500"}
-                                                    strokeWidth="8"
-                                                    strokeDasharray={365}
-                                                    strokeDashoffset={365 - (365 * review.overallScore) / 10}
-                                                    strokeLinecap="round"
-                                                    stroke="currentColor"
-                                                    fill="transparent"
-                                                    r="58"
-                                                    cx="64"
-                                                    cy="64"
-                                                />
-                                            </svg>
-                                            <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-                                                <span className="text-4xl font-bold">{review.overallScore}</span>
-                                                <span className="text-xs text-slate-400 uppercase tracking-wider">Score</span>
+
+                            {loadingSummary ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="spinner"></div>
+                                </div>
+                            ) : summary ? (
+                                <div className="bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                        {summary}
+                                    </p>
+                                </div>
+                            ) : null}
+                        </div>
+                    )}
+
+                    {activeTab === 'review' && (
+                        <div>
+                            {!review ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 mb-6">
+                                        Generate a comprehensive conference-style peer review for this paper.
+                                    </p>
+                                    <div className="max-w-xs mx-auto mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Target Domain / Audience</label>
+                                        <select
+                                            value={domain}
+                                            onChange={(e) => setDomain(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        >
+                                            <option value="computer science">Computer Science (General)</option>
+                                            <option value="machine learning">Machine Learning (NeurIPS/ICML)</option>
+                                            <option value="computer vision">Computer Vision (CVPR/ICCV)</option>
+                                            <option value="nlp">NLP (ACL/EMNLP)</option>
+                                            <option value="medicine">Medicine / Biomedical</option>
+                                            <option value="social science">Social Science</option>
+                                            <option value="physics">Physics</option>
+                                        </select>
+                                    </div>
+                                    <button
+                                        onClick={loadReview}
+                                        disabled={loadingReview}
+                                        className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
+                                    >
+                                        {loadingReview ? (
+                                            <>
+                                                <div className="spinner w-5 h-5 mr-2 border-white/20 border-t-white"></div>
+                                                Generating {domain} Review...
+                                            </>
+                                        ) : (
+                                            'Generate Review'
+                                        )}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="space-y-8 animate-fadeIn">
+                                    {/* Score Section */}
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                        <div className="bg-slate-900 text-white p-6 flex flex-col md:flex-row items-center gap-8">
+                                            <div className="relative">
+                                                {/* Score Ring SVG */}
+                                                <svg className="w-32 h-32 transform -rotate-90">
+                                                    <circle
+                                                        className="text-slate-700"
+                                                        strokeWidth="8"
+                                                        stroke="currentColor"
+                                                        fill="transparent"
+                                                        r="58"
+                                                        cx="64"
+                                                        cy="64"
+                                                    />
+                                                    <circle
+                                                        className={review.overallScore >= 7 ? "text-green-500" : review.overallScore >= 5 ? "text-yellow-500" : "text-red-500"}
+                                                        strokeWidth="8"
+                                                        strokeDasharray={365}
+                                                        strokeDashoffset={365 - (365 * review.overallScore) / 10}
+                                                        strokeLinecap="round"
+                                                        stroke="currentColor"
+                                                        fill="transparent"
+                                                        r="58"
+                                                        cx="64"
+                                                        cy="64"
+                                                    />
+                                                </svg>
+                                                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                                                    <span className="text-4xl font-bold">{review.overallScore}</span>
+                                                    <span className="text-xs text-slate-400 uppercase tracking-wider">Score</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 text-center md:text-left">
+                                                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                                                    <Award className="w-5 h-5 text-yellow-500" />
+                                                    <h3 className="text-xl font-bold">Reviewer's Assessment</h3>
+                                                </div>
+                                                <p className="text-slate-300 leading-relaxed text-lg">
+                                                    "{review.justification}"
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="flex-1 text-center md:text-left">
-                                            <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                                <Award className="w-5 h-5 text-yellow-500" />
-                                                <h3 className="text-xl font-bold">Reviewer's Assessment</h3>
+                                    </div>
+
+                                    {/* Strengths & Weaknesses Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        {/* Strengths */}
+                                        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
+                                            <div className="bg-green-50/50 p-4 border-b border-green-100 flex items-center gap-2">
+                                                <div className="p-2 bg-green-100 rounded-lg text-green-600">
+                                                    <ThumbsUp className="w-5 h-5" />
+                                                </div>
+                                                <h3 className="font-bold text-gray-800 text-lg">Key Strengths</h3>
                                             </div>
-                                            <p className="text-slate-300 leading-relaxed text-lg">
-                                                "{review.justification}"
+                                            <div className="p-6">
+                                                <ul className="space-y-4">
+                                                    {review.strengths?.map((item, i) => (
+                                                        <li key={i} className="flex gap-4 group/item">
+                                                            <div className="mt-1 flex-shrink-0">
+                                                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                                            </div>
+                                                            <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        {/* Weaknesses */}
+                                        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
+                                            <div className="bg-red-50/50 p-4 border-b border-red-100 flex items-center gap-2">
+                                                <div className="p-2 bg-red-100 rounded-lg text-red-600">
+                                                    <ThumbsDown className="w-5 h-5" />
+                                                </div>
+                                                <h3 className="font-bold text-gray-800 text-lg">Areas for Improvement</h3>
+                                            </div>
+                                            <div className="p-6">
+                                                <ul className="space-y-4">
+                                                    {review.weaknesses?.map((item, i) => (
+                                                        <li key={i} className="flex gap-4 group/item">
+                                                            <div className="mt-1 flex-shrink-0">
+                                                                <XCircle className="w-5 h-5 text-red-500" />
+                                                            </div>
+                                                            <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Detailed Analysis Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                                            <div className="flex items-center gap-2 mb-4 text-blue-600">
+                                                <BookOpen className="w-5 h-5" />
+                                                <h3 className="font-bold text-gray-900">Summary</h3>
+                                            </div>
+                                            <p className="text-gray-600 leading-relaxed text-sm">
+                                                {review.summary}
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-purple-300 transition-colors">
+                                            <div className="flex items-center gap-2 mb-4 text-purple-600">
+                                                <Zap className="w-5 h-5" />
+                                                <h3 className="font-bold text-gray-900">Novelty & Significance</h3>
+                                            </div>
+                                            <p className="text-gray-600 leading-relaxed text-sm">
+                                                {review.novelty}
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                            <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                                                <Layout className="w-5 h-5" />
+                                                <h3 className="font-bold text-gray-900">Soundness & Methodology</h3>
+                                            </div>
+                                            <p className="text-gray-600 leading-relaxed text-sm">
+                                                {review.soundness}
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-amber-300 transition-colors">
+                                            <div className="flex items-center gap-2 mb-4 text-amber-600">
+                                                <MessageSquare className="w-5 h-5" />
+                                                <h3 className="font-bold text-gray-900">Clarity & Presentation</h3>
+                                            </div>
+                                            <p className="text-gray-600 leading-relaxed text-sm">
+                                                {review.clarity}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
+                            )}
+                        </div>
+                    )}
 
-                                {/* Strengths & Weaknesses Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {/* Strengths */}
-                                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
-                                        <div className="bg-green-50/50 p-4 border-b border-green-100 flex items-center gap-2">
-                                            <div className="p-2 bg-green-100 rounded-lg text-green-600">
-                                                <ThumbsUp className="w-5 h-5" />
-                                            </div>
-                                            <h3 className="font-bold text-gray-800 text-lg">Key Strengths</h3>
-                                        </div>
-                                        <div className="p-6">
-                                            <ul className="space-y-4">
-                                                {review.strengths?.map((item, i) => (
-                                                    <li key={i} className="flex gap-4 group/item">
-                                                        <div className="mt-1 flex-shrink-0">
-                                                            <CheckCircle className="w-5 h-5 text-green-500" />
-                                                        </div>
-                                                        <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    {/* Weaknesses */}
-                                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow">
-                                        <div className="bg-red-50/50 p-4 border-b border-red-100 flex items-center gap-2">
-                                            <div className="p-2 bg-red-100 rounded-lg text-red-600">
-                                                <ThumbsDown className="w-5 h-5" />
-                                            </div>
-                                            <h3 className="font-bold text-gray-800 text-lg">Areas for Improvement</h3>
-                                        </div>
-                                        <div className="p-6">
-                                            <ul className="space-y-4">
-                                                {review.weaknesses?.map((item, i) => (
-                                                    <li key={i} className="flex gap-4 group/item">
-                                                        <div className="mt-1 flex-shrink-0">
-                                                            <XCircle className="w-5 h-5 text-red-500" />
-                                                        </div>
-                                                        <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{item}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
+                    {activeTab === 'ethics' && (
+                        <div>
+                            {loadingEthics ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="spinner"></div>
                                 </div>
-
-                                {/* Detailed Analysis Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                                        <div className="flex items-center gap-2 mb-4 text-blue-600">
-                                            <BookOpen className="w-5 h-5" />
-                                            <h3 className="font-bold text-gray-900">Summary</h3>
+                            ) : ethics ? (
+                                <div className="space-y-6 animate-fadeIn">
+                                    {ethics.oneLiner && (
+                                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                            <div className="flex items-center gap-2">
+                                                <Shield className="w-5 h-5 text-gray-600" />
+                                                <p className="text-gray-900 font-medium text-lg">{ethics.oneLiner}</p>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-600 leading-relaxed text-sm">
-                                            {review.summary}
-                                        </p>
-                                    </div>
+                                    )}
 
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-purple-300 transition-colors">
-                                        <div className="flex items-center gap-2 mb-4 text-purple-600">
-                                            <Zap className="w-5 h-5" />
-                                            <h3 className="font-bold text-gray-900">Novelty & Significance</h3>
+                                    <div className={`p-6 rounded-xl border ${ethics.overallAssessment === 'Safe' ? 'bg-green-50 border-green-200' : ethics.overallAssessment === 'Risky' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Shield className={`w-6 h-6 ${ethics.overallAssessment === 'Safe' ? 'text-green-600' : ethics.overallAssessment === 'Risky' ? 'text-red-600' : 'text-yellow-600'}`} />
+                                            <h3 className="text-xl font-bold">Overall Assessment: {ethics.overallAssessment}</h3>
                                         </div>
-                                        <p className="text-gray-600 leading-relaxed text-sm">
-                                            {review.novelty}
-                                        </p>
+                                        <p className="text-gray-700">{ethics.summary}</p>
+
+                                        {!ethics.isDetailed && (
+                                            <div className="mt-4">
+                                                <button
+                                                    onClick={() => loadEthics('detailed')}
+                                                    className="text-primary-600 font-medium hover:text-primary-800 flex items-center gap-1"
+                                                >
+                                                    View Detailed Analysis <ArrowLeft className="w-4 h-4 rotate-180" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
-                                        <div className="flex items-center gap-2 mb-4 text-indigo-600">
-                                            <Layout className="w-5 h-5" />
-                                            <h3 className="font-bold text-gray-900">Soundness & Methodology</h3>
-                                        </div>
-                                        <p className="text-gray-600 leading-relaxed text-sm">
-                                            {review.soundness}
-                                        </p>
-                                    </div>
-
-                                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-amber-300 transition-colors">
-                                        <div className="flex items-center gap-2 mb-4 text-amber-600">
-                                            <MessageSquare className="w-5 h-5" />
-                                            <h3 className="font-bold text-gray-900">Clarity & Presentation</h3>
-                                        </div>
-                                        <p className="text-gray-600 leading-relaxed text-sm">
-                                            {review.clarity}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {activeTab === 'ethics' && (
-                    <div>
-                        {loadingEthics ? (
-                            <div className="flex justify-center py-12">
-                                <div className="spinner"></div>
-                            </div>
-                        ) : ethics ? (
-                            <div className="space-y-6 animate-fadeIn">
-                                <div className={`p-6 rounded-xl border ${ethics.overallAssessment === 'Safe' ? 'bg-green-50 border-green-200' : ethics.overallAssessment === 'Risky' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Shield className={`w-6 h-6 ${ethics.overallAssessment === 'Safe' ? 'text-green-600' : ethics.overallAssessment === 'Risky' ? 'text-red-600' : 'text-yellow-600'}`} />
-                                        <h3 className="text-xl font-bold">Overall Assessment: {ethics.overallAssessment}</h3>
-                                    </div>
-                                    <p className="text-gray-700">{ethics.summary}</p>
-
-                                    {!ethics.isDetailed && (
-                                        <div className="mt-4">
-                                            <button
-                                                onClick={() => loadEthics('detailed')}
-                                                className="text-primary-600 font-medium hover:text-primary-800 flex items-center gap-1"
-                                            >
-                                                View Detailed Analysis <ArrowLeft className="w-4 h-4 rotate-180" />
-                                            </button>
+                                    {ethics.isDetailed && (
+                                        <div className="grid gap-4 animate-fadeIn">
+                                            {ethics.ethicalIssues?.map((issue, idx) => (
+                                                <div key={idx} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <span className="font-semibold text-gray-800">{issue.category}</span>
+                                                        <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${issue.severity === 'High' ? 'bg-red-100 text-red-700' :
+                                                            issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                                                'bg-blue-100 text-blue-700'
+                                                            }`}>
+                                                            {issue.severity} Severity
+                                                        </span>
+                                                    </div>
+                                                    {issue.oneLiner && (
+                                                        <p className="text-gray-900 font-medium mb-2 text-sm border-l-4 border-blue-500 pl-3 py-1 bg-blue-50">
+                                                            {issue.oneLiner}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-gray-600 mb-2">{issue.description}</p>
+                                                    <div className="bg-gray-50 p-2 rounded text-sm text-gray-500">
+                                                        <strong>Recommendation:</strong> {issue.recommendation}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>
-
-                                {ethics.isDetailed && (
-                                    <div className="grid gap-4 animate-fadeIn">
-                                        {ethics.ethicalIssues?.map((issue, idx) => (
-                                            <div key={idx} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <span className="font-semibold text-gray-800">{issue.category}</span>
-                                                    <span className={`px-2 py-1 rounded text-xs font-medium uppercase ${issue.severity === 'High' ? 'bg-red-100 text-red-700' :
-                                                        issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-blue-100 text-blue-700'
-                                                        }`}>
-                                                        {issue.severity} Severity
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-600 mb-2">{issue.description}</p>
-                                                <div className="bg-gray-50 p-2 rounded text-sm text-gray-500">
-                                                    <strong>Recommendation:</strong> {issue.recommendation}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12 text-gray-500">
-                                <p className="mb-4">Analyze this paper for ethical issues, bias, and potential risks.</p>
-                                <button
-                                    onClick={() => loadEthics('summary')}
-                                    disabled={loadingEthics}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                                >
-                                    Check Ethics
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {activeTab === 'versions' && (
-                    <div>
-                        <div className="mb-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                <GitBranch className="w-5 h-5" />
-                                Compare with another version
-                            </h3>
-                            <div className="flex gap-4">
-                                <select
-                                    className="flex-1 p-2 border border-gray-300 rounded-lg"
-                                    value={compareWithId}
-                                    onChange={(e) => setCompareWithId(e.target.value)}
-                                >
-                                    <option value="">Select a paper to compare with...</option>
-                                    {projectPapers.map(p => (
-                                        <option key={p._id} value={p._id}>{p.title}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    onClick={runVersionComparison}
-                                    disabled={!compareWithId || loadingComparison}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                                >
-                                    {loadingComparison ? 'Comparing...' : 'Run Comparison'}
-                                </button>
-                            </div>
+                            ) : (
+                                <div className="text-center py-12 text-gray-500">
+                                    <p className="mb-4">Analyze this paper for ethical issues, bias, and potential risks.</p>
+                                    <button
+                                        onClick={() => loadEthics('summary')}
+                                        disabled={loadingEthics}
+                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        Check Ethics
+                                    </button>
+                                </div>
+                            )}
                         </div>
+                    )}
 
-                        {versionComparison && (
-                            <div className="prose max-w-none bg-white p-8 rounded-xl border border-gray-200 shadow-sm animate-fadeIn">
-                                <h3>Version Comparison Report</h3>
-                                <div className="whitespace-pre-wrap">{versionComparison.comparison}</div>
+                    {activeTab === 'versions' && (
+                        <div>
+                            <div className="mb-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                    <GitBranch className="w-5 h-5" />
+                                    Compare with another version
+                                </h3>
+                                <div className="flex gap-4">
+                                    <select
+                                        className="flex-1 p-2 border border-gray-300 rounded-lg"
+                                        value={compareWithId}
+                                        onChange={(e) => setCompareWithId(e.target.value)}
+                                    >
+                                        <option value="">Select a paper to compare with...</option>
+                                        {projectPapers.map(p => (
+                                            <option key={p._id} value={p._id}>{p.title}</option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        onClick={runVersionComparison}
+                                        disabled={!compareWithId || loadingComparison}
+                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    >
+                                        {loadingComparison ? 'Comparing...' : 'Run Comparison'}
+                                    </button>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                )}
 
-                {activeTab === 'graph' && (
-                    <ConceptGraph paperId={id} />
-                )}
+                            {versionComparison && (
+                                <div className="prose max-w-none bg-white p-8 rounded-xl border border-gray-200 shadow-sm animate-fadeIn">
+                                    <h3>Version Comparison Report</h3>
+                                    <div className="whitespace-pre-wrap">{versionComparison.comparison}</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                {activeTab === 'notes' && (
-                    <NotesPanel paperId={id} />
-                )}
+                    {activeTab === 'graph' && (
+                        <ConceptGraph paperId={id} />
+                    )}
 
-                {activeTab === 'ask' && (
-                    <QABot paperId={id} projectId={paper?.projectId?._id || paper?.projectId} />
-                )}
+                    {activeTab === 'notes' && (
+                        <NotesPanel paperId={id} />
+                    )}
+
+                    {activeTab === 'ask' && (
+                        <QABot paperId={id} projectId={paper?.projectId?._id || paper?.projectId} />
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -19,7 +19,6 @@ export default function ProjectView() {
             const response = await projectAPI.getOne(id);
             setProject(response.data);
         } catch (error) {
-            console.error('Failed to load project:', error);
         } finally {
             setLoading(false);
         }
@@ -37,7 +36,6 @@ export default function ProjectView() {
             await paperAPI.upload(formData);
             loadProject();
         } catch (error) {
-            console.error('Upload failed:', error);
             alert('Failed to upload paper');
         } finally {
             setUploading(false);
@@ -59,7 +57,6 @@ export default function ProjectView() {
                 Back to Projects
             </Link>
 
-            {/* Top Navigation Bar */}
             <nav className="bg-white border border-gray-300 rounded-2xl shadow-md p-5 mb-8">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div>

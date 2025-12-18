@@ -42,7 +42,6 @@ export default function QABot({ paperId, projectId }) {
 
             setMessages((prev) => [...prev, botMessage]);
         } catch (error) {
-            console.error('QA Error:', error);
             setMessages((prev) => [
                 ...prev,
                 { role: 'assistant', content: 'Sorry, I encountered an error while trying to answer your question. Please try again.' },

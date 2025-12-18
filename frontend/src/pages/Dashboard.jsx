@@ -12,7 +12,6 @@ export default function Dashboard() {
 
     const [newProject, setNewProject] = useState({ name: '', description: '' });
 
-    // Quick Plagiarism Check State
     const [isQuickCheckOpen, setIsQuickCheckOpen] = useState(false);
     const [quickText, setQuickText] = useState('');
     const [quickLoading, setQuickLoading] = useState(false);
@@ -28,7 +27,6 @@ export default function Dashboard() {
             const response = await projectAPI.getAll();
             setProjects(response.data.projects);
         } catch (error) {
-            console.error('Failed to load projects:', error);
         } finally {
             setLoading(false);
         }
@@ -42,7 +40,6 @@ export default function Dashboard() {
             setShowCreateModal(false);
             loadProjects();
         } catch (error) {
-            console.error('Failed to create project:', error);
         }
     };
 
@@ -60,7 +57,6 @@ export default function Dashboard() {
             const res = await plagiarismAPI.checkWeb(quickText);
             setQuickResult(res.data);
         } catch (err) {
-            console.error('Quick check failed:', err);
             setQuickError(err.response?.data?.message || 'Plagiarism check failed. Please try again.');
         } finally {
             setQuickLoading(false);

@@ -23,7 +23,6 @@ export default function ReadingPath() {
             const response = await analysisAPI.getReadingPath(projectId, topic, level);
             setResult(response.data);
         } catch (err) {
-            console.error('Failed to generate reading path:', err);
             setError('Failed to generate reading path. Please try again.');
         } finally {
             setLoading(false);

@@ -19,7 +19,6 @@ export default function NotesPanel({ paperId }) {
             const response = await notesAPI.getAll(paperId);
             setNotes(response.data.notes);
         } catch (error) {
-            console.error('Failed to load notes:', error);
         } finally {
             setLoading(false);
         }
@@ -33,7 +32,6 @@ export default function NotesPanel({ paperId }) {
             setNewNote('');
             setIsAdding(false);
         } catch (error) {
-            console.error('Failed to create note:', error);
         }
     };
 
@@ -42,7 +40,6 @@ export default function NotesPanel({ paperId }) {
             await notesAPI.delete(id);
             setNotes(notes.filter((n) => n._id !== id));
         } catch (error) {
-            console.error('Failed to delete note:', error);
         }
     };
 
@@ -62,7 +59,6 @@ export default function NotesPanel({ paperId }) {
             setNotes(notes.map((n) => (n._id === id ? response.data.note : n)));
             setEditingId(null);
         } catch (error) {
-            console.error('Failed to update note:', error);
         }
     };
 

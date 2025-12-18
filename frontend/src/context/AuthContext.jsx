@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
             try {
                 setUser(JSON.parse(userData));
             } catch (error) {
-                console.error('Failed to parse user data:', error);
                 logout();
             }
         }

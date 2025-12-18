@@ -23,7 +23,6 @@ export default function CitationChecker() {
             const response = await projectAPI.getOne(projectId);
             setPapers(response.data.papers || []);
         } catch (error) {
-            console.error('Failed to load papers:', error);
         } finally {
             setLoadingPapers(false);
         }
@@ -40,7 +39,6 @@ export default function CitationChecker() {
             const response = await analysisAPI.checkCitations(userText, selectedPapers);
             setResults(response.data);
         } catch (error) {
-            console.error('Citation check failed:', error);
             alert('Failed to check citations. Please try again.');
         } finally {
             setLoading(false);
@@ -174,8 +172,8 @@ export default function CitationChecker() {
                                 <label
                                     key={paper._id}
                                     className={`flex items-start p-3 rounded-lg border cursor-pointer transition-all ${selectedPapers.includes(paper._id)
-                                            ? 'bg-primary-500/20 border-primary-500/50'
-                                            : 'bg-white/5 border-white/10 hover:border-white/20'
+                                        ? 'bg-primary-500/20 border-primary-500/50'
+                                        : 'bg-white/5 border-white/10 hover:border-white/20'
                                         }`}
                                 >
                                     <input

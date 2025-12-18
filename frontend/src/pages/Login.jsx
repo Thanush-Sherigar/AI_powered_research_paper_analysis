@@ -8,11 +8,9 @@ export default function Login() {
     const [showSignIn, setShowSignIn] = useState(false);
     const [showSignUp, setShowSignUp] = useState(false);
 
-    // Sign In Form State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // Sign Up Form State
     const [signUpName, setSignUpName] = useState('');
     const [signUpEmail, setSignUpEmail] = useState('');
     const [signUpPassword, setSignUpPassword] = useState('');
@@ -23,7 +21,6 @@ export default function Login() {
     const { login, register: registerUser, setAuthData } = useAuth();
     const navigate = useNavigate();
 
-    // Handle GitHub OAuth redirect
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get('accessToken');
@@ -53,7 +50,6 @@ export default function Login() {
                     }
                 } catch (err) {
                     setError('Failed to complete GitHub login');
-                    console.error(err);
                 } finally {
                     setLoading(false);
                 }
@@ -125,7 +121,6 @@ export default function Login() {
                 </button>
             </nav>
 
-            {/* Decorative Borders */}
             <div className="absolute inset-y-0 left-0 h-full w-px bg-neutral-200/80">
                 <div className="absolute top-0 h-40 w-px bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
             </div>
@@ -137,7 +132,6 @@ export default function Login() {
             </div>
 
             <div className="px-4 py-10 md:py-20">
-                {/* Animated Hero Title */}
                 <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl">
                     {"Analyze Research Papers in Minutes, Not Hours"
                         .split(" ")
@@ -197,11 +191,9 @@ export default function Login() {
                     </button>
                 </motion.div>
 
-                {/* Popup Sign In Modal */}
                 <AnimatePresence>
                     {showSignIn && (
                         <>
-                            {/* Backdrop */}
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -311,11 +303,9 @@ export default function Login() {
                     )}
                 </AnimatePresence>
 
-                {/* Popup Sign Up Modal */}
                 <AnimatePresence>
                     {showSignUp && (
                         <>
-                            {/* Backdrop */}
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}

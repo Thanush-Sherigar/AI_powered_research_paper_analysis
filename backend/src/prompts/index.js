@@ -363,6 +363,7 @@ Return a JSON object:
     {
       "category": "Privacy|Bias|Impact|Transparency",
       "severity": "Low|Medium|High",
+      "oneLiner": "A single concise sentence (max 15 words) summarizing this specific concern.",
       "description": "Description of the issue",
       "recommendation": "How to mitigate it"
     }
@@ -380,6 +381,7 @@ ${paperText}
 
 Return a JSON object:
 {
+  "oneLiner": "A single sentence (max 15 words) capturing the ethical assessment.",
   "summary": "A concise 2-3 sentence overview of the ethical standing of this paper.",
   "overallAssessment": "Safe|Caution|Risky",
   "hasPotentialIssues": true|false

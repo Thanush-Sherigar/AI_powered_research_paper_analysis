@@ -51,7 +51,7 @@ export default function Footer() {
                                 className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
                             >
                                 <Mail className="w-4 h-4" />
-                                <span>support@paperreviewer.ai</span>
+                                <span>thanush953@gmail.com</span>
                             </a>
                             <a
                                 href="https://github.com"
@@ -71,7 +71,7 @@ export default function Footer() {
                 <div className="pt-6 border-t border-gray-200">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-gray-600 text-sm">
-                            © {currentYear} Paper Reviewer. All rights reserved.
+                            © {currentYear} Paper Reviewer.
                         </p>
                         <p className="text-gray-600 text-sm flex items-center gap-1">
                             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> for researchers
