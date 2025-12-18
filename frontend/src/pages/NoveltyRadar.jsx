@@ -142,7 +142,7 @@ export default function NoveltyRadar() {
 
     return (
         <div className="container mx-auto p-6">
-            <Link to={`/projects/${id}`} className="flex items-center text-gray-400 hover:text-white mb-6">
+            <Link to={`/projects/${id}`} className="flex items-center text-gray-600 hover:text-gray-900 mb-6">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Project
             </Link>
@@ -184,7 +184,7 @@ export default function NoveltyRadar() {
                         <h3 className="text-lg font-semibold mb-4">Check a Paper Against the Web</h3>
                         <div className="flex gap-4 items-end">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Select Paper</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Select Paper</label>
                                 <select
                                     value={selectedWebPaperId}
                                     onChange={(e) => setSelectedWebPaperId(e.target.value)}
@@ -211,7 +211,7 @@ export default function NoveltyRadar() {
                     <div className="glass-card p-6 space-y-6">
                         <div className="flex flex-col md:flex-row gap-6">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Paper A (Base)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Paper A (Base)</label>
                                 <select
                                     value={pairPaper1}
                                     onChange={(e) => setPairPaper1(e.target.value)}
@@ -224,7 +224,7 @@ export default function NoveltyRadar() {
                                 </select>
                             </div>
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Paper B (Comparison)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Paper B (Comparison)</label>
                                 <select
                                     value={pairPaper2}
                                     onChange={(e) => setPairPaper2(e.target.value)}
@@ -249,7 +249,7 @@ export default function NoveltyRadar() {
                         </div>
 
                         <div className="border-t border-slate-700 pt-6">
-                            <h4 className="text-sm font-semibold text-gray-400 mb-3 flex items-center">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
                                 <Upload className="w-4 h-4 mr-2" />
                                 Upload New Papers (if needed)
                             </h4>
@@ -268,7 +268,7 @@ export default function NoveltyRadar() {
                 <div className="glass-card p-8 text-center border-red-500/30 mb-8">
                     <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
                     <h3 className="text-xl font-semibold mb-2 text-red-400">Analysis Failed</h3>
-                    <p className="text-gray-400">{error}</p>
+                    <p className="text-gray-700">{error}</p>
                 </div>
             )}
 
@@ -329,12 +329,12 @@ export default function NoveltyRadar() {
                                     <Lightbulb className="w-5 h-5 mr-2 text-yellow-400" />
                                     Analysis Summary
                                 </h3>
-                                <p className="text-gray-300 leading-relaxed mb-6">
+                                <p className="text-gray-800 leading-relaxed mb-6">
                                     {data?.summary}
                                 </p>
 
                                 <div className="space-y-4">
-                                    <h4 className="font-bold text-gray-400 uppercase text-xs tracking-wider">Top Contributors</h4>
+                                    <h4 className="font-bold text-gray-700 uppercase text-xs tracking-wider">Top Contributors</h4>
                                     {data?.papers?.sort((a, b) => b.noveltyScore - a.noveltyScore).slice(0, 3).map((paper, idx) => (
                                         <div key={idx} className="bg-white/5 p-4 rounded-lg border border-white/10">
                                             <div className="flex justify-between items-start mb-2">
@@ -344,9 +344,9 @@ export default function NoveltyRadar() {
                                                 </span>
                                             </div>
                                             <div className="space-y-2">
-                                                <div>
-                                                    <span className="text-xs text-green-400 font-bold block mb-1">Unique Contributions:</span>
-                                                    <ul className="list-disc list-inside text-sm text-gray-400 pl-2">
+                                                <div className="border border-gray-200 rounded-lg p-3 bg-green-50">
+                                                    <span className="text-xs text-green-600 font-bold block mb-1">Unique Contributions:</span>
+                                                    <ul className="list-disc list-inside text-sm text-gray-700 pl-2">
                                                         {paper.uniqueContributions.slice(0, 2).map((c, i) => (
                                                             <li key={i}>{c}</li>
                                                         ))}
@@ -376,11 +376,11 @@ export default function NoveltyRadar() {
                                             </div>
                                         </div>
 
-                                        <div className="mb-4">
-                                            <h5 className="text-sm font-bold text-green-400 mb-2 uppercase tracking-wide">Unique Contributions</h5>
+                                        <div className="mb-4 border border-gray-200 rounded-lg p-4 bg-green-50">
+                                            <h5 className="text-sm font-bold text-green-600 mb-2 uppercase tracking-wide">Unique Contributions</h5>
                                             <ul className="space-y-1">
                                                 {paper.uniqueContributions.map((item, i) => (
-                                                    <li key={i} className="text-sm text-gray-300 flex items-start">
+                                                    <li key={i} className="text-sm text-gray-800 flex items-start">
                                                         <span className="mr-2 text-green-500">•</span>
                                                         {item}
                                                     </li>
@@ -388,11 +388,11 @@ export default function NoveltyRadar() {
                                             </ul>
                                         </div>
 
-                                        <div>
-                                            <h5 className="text-sm font-bold text-orange-400 mb-2 uppercase tracking-wide">Overlaps</h5>
+                                        <div className="border border-gray-200 rounded-lg p-4 bg-orange-50">
+                                            <h5 className="text-sm font-bold text-orange-600 mb-2 uppercase tracking-wide">Overlaps</h5>
                                             <ul className="space-y-1">
                                                 {paper.overlaps.map((item, i) => (
-                                                    <li key={i} className="text-sm text-gray-300 flex items-start">
+                                                    <li key={i} className="text-sm text-gray-800 flex items-start">
                                                         <span className="mr-2 text-orange-500">•</span>
                                                         {item}
                                                     </li>
@@ -419,7 +419,7 @@ export default function NoveltyRadar() {
             {loading && (
                 <div className="flex flex-col items-center justify-center p-12">
                     <div className="spinner mb-4"></div>
-                    <p className="text-gray-400">Runnning deeper analysis...</p>
+                    <p className="text-gray-700">Runnning deeper analysis...</p>
                 </div>
             )}
         </div>
