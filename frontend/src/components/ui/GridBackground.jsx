@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 
-export function GridBackground({ children, className }) {
+export function GridBackground({ children, className, size = 80 }) {
     return (
         <div
             className={cn(
@@ -12,9 +12,11 @@ export function GridBackground({ children, className }) {
             <div
                 className={cn(
                     "absolute inset-0 pointer-events-none",
-                    "[background-size:80px_80px]",
-                    "[background-image:linear-gradient(to_right,rgba(59,130,246,0.5)_2px,transparent_2px),linear-gradient(to_bottom,rgba(59,130,246,0.5)_2px,transparent_2px)]"
                 )}
+                style={{
+                    backgroundSize: `${size}px ${size}px`,
+                    backgroundImage: `linear-gradient(to right, rgba(59, 130, 246, 0.5) 2px, transparent 2px), linear-gradient(to bottom, rgba(59, 130, 246, 0.5) 2px, transparent 2px)`
+                }}
             />
             {/* Radial gradient for the container to give a faded look */}
             <div

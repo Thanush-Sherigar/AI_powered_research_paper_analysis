@@ -59,45 +59,47 @@ export default function ProjectView() {
                 Back to Projects
             </Link>
 
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-                <div>
-                    <h1 className="text-4xl font-bold text-gradient mb-2">
-                        {project?.name}
-                    </h1>
-                    <p className="text-gray-400">{project?.description}</p>
+            {/* Top Navigation Bar */}
+            <nav className="bg-white border border-gray-300 rounded-2xl shadow-md p-5 mb-8">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent mb-1">
+                            {project?.name}
+                        </h1>
+                        <p className="text-gray-800 text-sm font-medium">{project?.description}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Link
+                            to={`/projects/${id}/novelty`}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                            <Radar className="w-4 h-4" />
+                            <span>Novelty Radar</span>
+                        </Link>
+                        <Link
+                            to={`/projects/${id}/reading-path`}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                            <BookMarked className="w-4 h-4" />
+                            <span>Reading Path</span>
+                        </Link>
+                        <Link
+                            to={`/projects/${id}/citation-checker`}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                            <Sparkles className="w-4 h-4" />
+                            <span>Citation Checker</span>
+                        </Link>
+                        <Link
+                            to={`/projects/${id}/plagiarism`}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                            <ShieldAlert className="w-4 h-4" />
+                            <span>Plagiarism Check</span>
+                        </Link>
+                    </div>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                    <Link
-                        to={`/projects/${id}/novelty`}
-                        className="btn-insights flex items-center space-x-2"
-                    >
-                        <Radar className="w-5 h-5" />
-                        <span>Novelty Radar</span>
-                    </Link>
-                    <Link
-                        to={`/projects/${id}/reading-path`}
-                        className="btn-comparison flex items-center space-x-2"
-                    >
-                        <BookMarked className="w-5 h-5" />
-                        <span>Reading Path</span>
-                    </Link>
-                    <Link
-                        to={`/projects/${id}/citation-checker`}
-                        className="btn-quality flex items-center space-x-2"
-                    >
-                        <Sparkles className="w-5 h-5" />
-                        <span>Citation Checker</span>
-                    </Link>
-                    <Link
-                        to={`/projects/${id}/plagiarism`}
-                        className="btn-danger flex items-center space-x-2"
-                        style={{ background: 'linear-gradient(to right, #ef4444, #f87171)' }}
-                    >
-                        <ShieldAlert className="w-5 h-5" />
-                        <span>Plagiarism Check</span>
-                    </Link>
-                </div>
-            </div>
+            </nav>
 
             <div className="glass-card p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4">Add Papers</h3>

@@ -21,40 +21,41 @@ export default function Sidebar() {
             label: "Dashboard",
             href: "/",
             icon: (
-                <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                <LayoutDashboard style={{ color: '#000000' }} className="dark:text-neutral-200 h-6 w-6 flex-shrink-0 stroke-[2.5]" />
             ),
         },
         {
             label: "Comparisons",
             href: "/compare",
             icon: (
-                <GitCompare className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                <GitCompare style={{ color: '#000000' }} className="dark:text-neutral-200 h-6 w-6 flex-shrink-0 stroke-[2.5]" />
             ),
         },
         {
             label: "My Library",
             href: "/library",
             icon: (
-                <Files className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                <Files style={{ color: '#000000' }} className="dark:text-neutral-200 h-6 w-6 flex-shrink-0 stroke-[2.5]" />
             ),
         },
         {
             label: "Settings",
             href: "/settings",
             icon: (
-                <Settings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                <Settings style={{ color: '#000000' }} className="dark:text-neutral-200 h-6 w-6 flex-shrink-0 stroke-[2.5]" />
             ),
         },
     ];
 
     const Logo = () => {
         return (
-            <div className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20">
+            <div className="font-normal flex space-x-2 items-center text-sm py-1 relative z-20">
                 <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
                 <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="font-medium text-black dark:text-white whitespace-pre"
+                    style={{ color: '#000000' }}
+                    className="font-bold text-base dark:text-white whitespace-pre"
                 >
                     Paper Reviewer
                 </motion.span>
@@ -83,8 +84,8 @@ export default function Sidebar() {
                 </div>
                 <div>
                     <div className="flex items-center justify-start gap-2 group/sidebar py-2">
-                        <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center border border-white/10">
-                            <User className="w-4 h-4 text-zinc-300" />
+                        <div className="h-7 w-7 flex-shrink-0 rounded-full bg-black flex items-center justify-center border border-white/20">
+                            <User style={{ color: '#FFFFFF' }} className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col">
                             <motion.span
@@ -92,7 +93,8 @@ export default function Sidebar() {
                                     display: open ? "inline-block" : "none",
                                     opacity: open ? 1 : 0,
                                 }}
-                                className="text-neutral-700 dark:text-neutral-200 text-sm font-medium whitespace-pre inline-block !p-0 !m-0"
+                                style={{ color: '#000000' }}
+                                className="dark:text-neutral-200 text-base font-bold whitespace-pre inline-block !p-0 !m-0"
                             >
                                 {user?.name || 'Researcher'}
                             </motion.span>
@@ -104,7 +106,7 @@ export default function Sidebar() {
                             label: "Logout",
                             href: "#",
                             icon: (
-                                <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                                <LogOut style={{ color: '#000000' }} className="dark:text-neutral-200 h-6 w-6 flex-shrink-0 stroke-[2.5]" />
                             ),
                         }}
                         onClick={logout}
