@@ -38,7 +38,7 @@ function App() {
     const { isAuthenticated } = useAuth();
 
     return (
-        <div className="flex items-start min-h-screen bg-zinc-50 dark:bg-black relative">
+        <div className="flex items-start min-h-screen bg-white relative">
             {isAuthenticated && <Sidebar />}
 
             <div className="flex-1 flex flex-col min-w-0 relative z-10">
